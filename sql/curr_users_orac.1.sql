@@ -1,3 +1,7 @@
+/* From Oracle Scripts, O Reilly & Associates, Inc. */
+/* Copyright 1998 by Brian Lomasky, DBA Solutions, Inc., */
+/* lomasky@earthlink.net */
+
 select s.username,osuser,sid,
 decode(status,'ACTIVE','Act','INACTIVE','Inact','KILLED','Kill',status) stat,
 decode(type,'BACKGROUND','Back','USER','User',type) type,p.spid,

@@ -1,3 +1,7 @@
+/* From Oracle Scripts, O Reilly & Associates, Inc. */
+/* Copyright 1998 by Brian Lomasky, DBA Solutions, Inc., */
+/* lomasky@earthlink.net */
+
 declare
 cursor init_c is
 select name,to_char(sysdate,'MM/DD/YY')

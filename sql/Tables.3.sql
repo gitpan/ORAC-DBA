@@ -1,3 +1,7 @@
+/* From Oracle Scripts, O Reilly & Associates, Inc. */
+/* Copyright 1998 by Brian Lomasky, DBA Solutions, Inc., */
+/* lomasky@earthlink.net */
+
 declare
 cursor t_c is
 select upper(owner),upper(table_name),pct_free,pct_used,ini_trans,max_trans,

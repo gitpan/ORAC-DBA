@@ -1,3 +1,7 @@
+/* From Oracle Scripts, O Reilly & Associates, Inc. */
+/* Copyright 1998 by Brian Lomasky, DBA Solutions, Inc., */
+/* lomasky@earthlink.net */
+
 declare
 cursor syn_cursor is
 select owner,synonym_name,table_owner,table_name,db_link

@@ -1,3 +1,7 @@
+/* From Oracle Scripts, O Reilly & Associates, Inc. */
+/* Copyright 1998 by Brian Lomasky, DBA Solutions, Inc., */
+/* lomasky@earthlink.net */
+
 declare
 cursor m_c is select log_mode from sys.v_$database;
 cursor mml_c is select max(length(member) + 2) maxmem1 from sys.v_$logfile;

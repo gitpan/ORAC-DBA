@@ -50,13 +50,13 @@ $ts_mb->command(-label => 'Summary Chart by Tablespace',
 $ts_mb->command(-label => 'Detailed Chart by Tablespace/Datafile',
    -command => sub {&bz;&tab_det_orac('Datafiles','tab_det_orac');;&ubz});
 $ts_mb->separator();
-$ts_mb->command(-label => 'Database Files',-command => sub {&bz;&f_clr;my @params;my $i;
-    for ($i = 0;$i < 8;$i++){$params[$i] = $ENV{"ORACLE_HOME"};};
-    &prep_lp('Database Files','datafile_orac','1',$rp_5_opt2,0,@params);&ubz});
+$ts_mb->command(-label => 'Database Files',-command => sub {&bz;&f_clr;
+    &prep_lp('Database Files','datafile_orac','1',$rp_5_opt2,0);&ubz});
 $ts_mb->command(-label => 'Extents Report',
     -command => sub {&bz;&f_clr;&prep_lp('Extents Report','ext_orac','1',$rp_8_opt3,0);&ubz});
 $ts_mb->command(-label => 'Max Extents Free Space',-command => sub {&bz;&f_clr;my @params;my $i;
        for ($i = 0;$i < 9;$i++){$params[$i] = $Block_Size;};
+print TEXT "blocksize >$Block_Size<\n params >@params<\n";
        &prep_lp('Max Extents','max_ext_orac','1',$rp_8a_bits,0,@params);&ubz});
 $sw_flag[0] = $ts_mb->command(-label => 'DBA Tables Viewer', 
        -command => sub {&f_clr;&sub_win(0,$mw,'dbas_orac','1','DBA Tables',50)});

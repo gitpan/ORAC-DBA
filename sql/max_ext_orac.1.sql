@@ -1,3 +1,7 @@
+/* From Oracle Scripts, O Reilly & Associates, Inc. */
+/* Copyright 1998 by Brian Lomasky, DBA Solutions, Inc., */
+/* lomasky@earthlink.net */
+
 select T.name,
 decode(T.name,'RBS','',decode(sum(greatest(
 sign(nvl((S.extsize * ( ? )),0)-Biggest),0)),0, decode(sum(greatest(sign(

@@ -10,6 +10,17 @@ Orac --  an Oracle 7.3 and Oracle 8 DBA GUI tool for Perl/Tk
    with the exception that it cannot be placed on a CD-ROM or similar media
    for commercial distribution without the prior approval of the author.
 
+PLEASE NOTE:
+
+   Some of the Oracle SQL scripts which come with this perl program,
+   are copyrighted to Brian Lomasky.  Please seek clarification from
+   Brian before you extend the use of these SQL scripts beyond this
+   perl program.  Such scripts can be easily identified by the header:
+
+   /* From Oracle Scripts, O'Reilly & Associates, Inc. */
+   /* Copyright 1998 by Brian Lomasky, DBA Solutions, Inc., */
+   /* lomasky@earthlink.net */
+
 WARNING:
 
    THIS SOFTWARE IS PROVIDED "AS IS" IN THE HOPE THAT IT WILL BE USEFUL, 
@@ -30,9 +41,9 @@ REALLY QUICK START GUIDE:
 SLIGHTLY LESS QUICK START GUIDE:
 
 *). Load perl5.005_02, DBD-Oracle-0.54, DBI-1.02 & Tk402.004
-*). Unzip (gzip -d, gunzip) the ORAC-DBA-0.03.tar.gz file
-*). Untar (tar xvf) the ORAC-DBA-0.03.tar file
-*). cd ORAC-DBA-0.03
+*). Unzip (gzip -d, gunzip) the ORAC-DBA-0.05.tar.gz file
+*). Untar (tar xvf) the ORAC-DBA-0.05.tar file
+*). cd ORAC-DBA-0.05
 *). Set ORACLE_HOME in your environment
 *). Run orac_dba.pl, first making sure the top line of the
     file has the right perl string address, eg:
@@ -85,5 +96,7 @@ Vers Date   Comment
             currently uses Tk4.  Preparing code for first port away from 
             Solaris 2.6 UNIX.
             Thanks to Tim Bunce for constructive criticism.
+0.04 Apr 99 Adjustments after first DBI-Users release.
+0.05 Apr 99 More Adjustments after first DBI-Users release.
 
 EOF

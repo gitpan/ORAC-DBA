@@ -1,3 +1,7 @@
+/* From Oracle Scripts, O Reilly & Associates, Inc. */
+/* Copyright 1998 by Brian Lomasky, DBA Solutions, Inc., */
+/* lomasky@earthlink.net */
+
 select a.tablespace_name tbsp_nam,
 b.tablespace_name dummy,
 round(((sum(b.bytes)/count(distinct a.file_id||'.'||a.block_id))/(1024*1024)),2) bytes,

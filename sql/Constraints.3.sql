@@ -1,3 +1,7 @@
+/* From Oracle Scripts, O Reilly & Associates, Inc. */
+/* Copyright 1998 by Brian Lomasky, DBA Solutions, Inc., */
+/* lomasky@earthlink.net */
+
 declare
 t_on sys.dba_constraints.owner%TYPE;
 t_cn sys.dba_constraints.constraint_name%TYPE;

@@ -1,3 +1,7 @@
+/* From Oracle Scripts, O Reilly & Associates, Inc. */
+/* Copyright 1998 by Brian Lomasky, DBA Solutions, Inc., */
+/* lomasky@earthlink.net */
+
 select '/* a */' step, 'create tablespace '||T.tablespace_name||chr(10)||
 'datafile '''||F.file_name||''' size '|| to_char(F.bytes/1048576)||'M'||chr(10)||
 'default storage (Initial '||to_char(T.initial_extent)||

@@ -1,4 +1,8 @@
-declare
+/* From Oracle Scripts, O Reilly & Associates, Inc. */
+/* Copyright 1998 by Brian Lomasky, DBA Solutions, Inc., */
+/* lomasky@earthlink.net */
+
+Declare
 cursor o_c is
 select grantee,owner,table_name,privilege,decode(grantable,'YES',' WITH GRANT OPTION;',';')
 from sys.dba_tab_privs

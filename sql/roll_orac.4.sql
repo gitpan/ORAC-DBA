@@ -1,3 +1,7 @@
+/* From Oracle Scripts, O Reilly & Associates, Inc. */
+/* Copyright 1998 by Brian Lomasky, DBA Solutions, Inc., */
+/* lomasky@earthlink.net */
+
 select 1 point,'Rollback contention system undo header = '||
 (round(max(decode(class,'system undo header',count,0)) /
 (sum(count)+0.00000000001),4))*100||'%'||

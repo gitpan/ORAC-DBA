@@ -1,3 +1,8 @@
+
+/* From Oracle Scripts, O Reilly & Associates, Inc. */
+/* Copyright 1998 by Brian Lomasky, DBA Solutions, Inc., */
+/* lomasky@earthlink.net */
+
 for v_this_counter in 1..v_totter loop
 for ff in c2 (v_this_build(v_this_counter)) loop
 if ff.data_type = 'NUMBER' then

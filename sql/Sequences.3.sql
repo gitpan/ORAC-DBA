@@ -1,3 +1,7 @@
+/* From Oracle Scripts, O Reilly & Associates, Inc. */
+/* Copyright 1998 by Brian Lomasky, DBA Solutions, Inc., */
+/* lomasky@earthlink.net */
+
 declare
 cursor seq_cursor is
 select sequence_owner,sequence_name,min_value,max_value,increment_by,cycle_flag,order_flag,cache_size

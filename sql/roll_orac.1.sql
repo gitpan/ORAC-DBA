@@ -1,3 +1,7 @@
+/* From Oracle Scripts, O Reilly & Associates, Inc. */
+/* Copyright 1998 by Brian Lomasky, DBA Solutions, Inc., */
+/* lomasky@earthlink.net */
+
 select 'GETS  - # of gets on the rollback segment header: '||sum(gets)||chr(10)||
 'WAITS - # of waits for the rollback segment header: '||sum(waits)||
 chr(10)||'The ratio of Rollback waits/gets is '||
