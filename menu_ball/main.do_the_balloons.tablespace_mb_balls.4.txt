@@ -1,2 +1,0 @@
-This reports on all the various datafiles and provides you with 
-status information.

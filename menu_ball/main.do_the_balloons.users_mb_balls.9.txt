@@ -1,1 +1,0 @@
-Prints a report of all profiles defined in the database.  

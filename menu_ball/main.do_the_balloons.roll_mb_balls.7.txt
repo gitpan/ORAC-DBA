@@ -1,2 +1,0 @@
-Obtain the name of each latch waiting, the process holding it and the wait 
-ratio for all latches in the database.  Other Latch stuff.

@@ -1,1 +1,0 @@
-Clears screen automatically before every report printed out

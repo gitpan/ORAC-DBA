@@ -1,3 +1,0 @@
-Displays all database process entries at the current time, for use with 
-killing rogue processes. Developed in association with related SQL 
-scripts by Steve Shaw (smshaw@uk.oracle.com).

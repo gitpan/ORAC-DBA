@@ -1,3 +1,0 @@
-Corin wanted Orac to be able to print out all the Grant statements in a 
-database, so here is that capability, with maybe some others if I get time 
-to get round to them.  Enjoy.  Added Synonyms section: 21-12-1998.

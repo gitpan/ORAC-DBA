@@ -1,4 +1,0 @@
-Displays locking information for the current database. Get pointers to 
-SQL statement memory pigs, System wide Waits information and information 
-on who may be blocking whom, if you've got bizarre locking problems.
-Plus other stuff if I can get round to writing it.

@@ -1,1 +1,0 @@
-Brings up a selection list of the various database links.

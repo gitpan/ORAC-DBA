@@ -1,4 +1,0 @@
-Detailed breakdown of fragmentation of tablespace files within database. 
-A column, 'Dead', is basd on assumption that contiguous block smaller than 
-5 Oracle blocks cannot be used. Also find application problems resulting 
-from space shortages, plus other Tablespace type stuff.

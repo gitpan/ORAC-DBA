@@ -1,2 +1,0 @@
-Primary Database NLS, and V$ set-up tables, including two separate 
-views of init.ora values

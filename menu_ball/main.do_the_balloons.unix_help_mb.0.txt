@@ -1,2 +1,0 @@
-Help on various difficult-to-remember Unix and/or Oracle tools/functions; 
-more will be added as-and-when

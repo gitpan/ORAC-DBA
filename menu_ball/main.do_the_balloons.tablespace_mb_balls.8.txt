@@ -1,3 +1,0 @@
-Brings up a pick list of DBA tables.  Double-click on your choice, and access 
-the data in that table.  When you wish to close this window, please use the 
-regular 'Dismiss' button or this option will not un-grey on the menu.

@@ -1,1 +1,0 @@
-Prints a report of all user accounts defined in the database.  

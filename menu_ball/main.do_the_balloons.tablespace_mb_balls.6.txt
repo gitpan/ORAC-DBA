@@ -1,4 +1,0 @@
-This lists objects having more than one extent.  Provides information for 
-planning future defragmentation database reorganisations.  All objects that 
-exceed 75% of their MAXEXTENTS values, or have more than 20 extents are 
-flagged (*** FIX ME ***) for investigation, and come 1st in the report.

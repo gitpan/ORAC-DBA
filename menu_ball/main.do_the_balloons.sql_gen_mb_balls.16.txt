@@ -1,4 +1,0 @@
-Useful in conjunction with the invalid object compiler. Brings up pick list of 
-invalid objects.  Double-click on choice, and it prints out errors associated 
-with compilation of that object. (When you wish to close this window, please 
-use regular 'Dismiss' button or option will not un-grey on the menu.)

@@ -1,3 +1,0 @@
-Lists all direct grants made to specific user, segregated by nature of grant.  
-This report a complete listing of initial permissions along all access paths 
-for user. Researches potential impact of revoking direct grant issued to user.

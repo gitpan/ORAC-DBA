@@ -1,1 +1,0 @@
-Prints a report of all current users in the current database.

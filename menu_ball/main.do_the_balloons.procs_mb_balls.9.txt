@@ -1,2 +1,0 @@
-Lists all direct grants made to all users and roles, segregated by the 
-nature of the grant.

@@ -1,2 +1,0 @@
-Tuning information for the database, + database parameters, 
-+ rollback info, etc

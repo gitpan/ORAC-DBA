@@ -1,4 +1,0 @@
-Drill down into tables, and retrieve copyable SQL to recreate significant 
-attributes.  Added Index Builder 06-JAN-99 which creates pre-sized index 
-creation scripts for specific tables.  Added Universal Form 15-JAN-99 to 
-read Info from all tables in database.

@@ -1,3 +1,0 @@
-Quick Diagrammatic check on various tuning parameters, done in the 
-best 'Bones in the Enterprise's Sick Bay' style.  (It's worse than that 
-Jim, the library cache is dead). I like this one.

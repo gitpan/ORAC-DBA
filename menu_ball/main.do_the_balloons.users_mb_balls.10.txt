@@ -1,1 +1,0 @@
-Prints a report of all user account quotas defined in the database.  

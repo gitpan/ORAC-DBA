@@ -1,3 +1,0 @@
-Gives you a hierarchical list of owners of Synonyms within database 
-(including PUBLIC, if there are any public synonyms).  Double-click on owner, 
-then on the revealed synonym to get copyable SQL with which synonym created.

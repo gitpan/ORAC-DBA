@@ -1,2 +1,0 @@
-Gives you access to all the sequences in the databases, and the associated 
-SQL code with which they were created.

@@ -1,2 +1,0 @@
-Information on SIDs & PADDRs, etc, to help you decide which to 
-kill off + detailed grant info

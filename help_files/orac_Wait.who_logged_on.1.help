@@ -1,7 +1,0 @@
-Who's accessing which objects? (NB: Accessing DOES NOT mean locking)
-
-Someone/Something else could be locking the accessed object and is
-not shown here, (eg: someone else may not have committed an update,
-in their session, which is preventing the current accessor completing 
-their task).  See other reports for more details.
-
