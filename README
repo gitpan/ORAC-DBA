@@ -2,8 +2,20 @@ Orac --  an Oracle 7.3 and Oracle 8 DBA GUI tool for Perl/Tk
 
    Copyright (c) 1998,1999  Andy Duncan, England
 
-   email:   andy_j_duncan@yahoo.com
-   CPAN id: CPAN/authors/id/A/AN/ANDYDUNC
+   email:         andy_j_duncan@yahoo.com
+   CPAN id:       CPAN/authors/id/A/AN/ANDYDUNC
+
+ORAC WEB PAGE:
+
+Orac now has its own web page, which you can find at:
+
+=> http://www.kkitts.com/orac-dba/
+
+The web page is managed by Kevin Kitts.  Please see his Orac
+page for more information.
+
+
+TERMS AND CONDITIONS OF USE:
 
    You may distribute under the terms of either the GNU General Public
    License or the Artistic License, as specified in the Perl README file,
@@ -33,6 +45,11 @@ PREREQUISITES:
    modules DBD-Oracle-0.54, DBI-1.02 & Tk402.004
    In loading DBI, you'll have set ORACLE_HOME.  Please keep this set.
 
+LINUX USERS:
+
+   There are some further notes at the end of this README file
+   for Linux users.
+
 REALLY QUICK START GUIDE:
 
    perl orac_dba.pl <RETURN>
@@ -50,6 +67,7 @@ SLIGHTLY LESS QUICK START GUIDE:
         => #!/usr/local/bin/perl
     Or run it with the Perl program directly, 'perl orac_dba.pl'.
 *). Most things should be fairly straightforward after that.
+
 
 ABOUT ORAC:
 
@@ -69,8 +87,8 @@ which you would like to be included within Orac, or requirements which you
 think may be useful to others, please mail them to me and I'll try and embed 
 them in the next release. 
 
-If you would like to expand Orac into an Open-Source "Gimp-Like" internet
-project, then even better.
+If you read through the revision history below, you'll see many such ideas
+have been taken up, and are now integral parts of the main Orac tool.
 
 Simple graphical ideas for turning difficult to read V$ table information 
 into useful pictures are particularly welcomed, as is functionality 
@@ -78,11 +96,24 @@ not currently supplied within other GUI tools.  General ideas for improving
 Orac (which began life as a SQL script for killing rogue Oracle processes) 
 are always welcomed.  Orac was built mainly upon Oracle 804 but should 
 work equally well with anything Oracle 7.3 or over.  I hope you both enjoy 
-using Orac, and save yourself some time by employing its scavenged 
-collection of SQL scripts.
+using Orac, and save yourself some time by using it.
 
-Revision History
-----------------
+ORAC MONGERS (in alphabetical surname order):
+
+Name           Email                     Position
+----           -----                     --------
+Andy Duncan    andy_j_duncan@yahoo.com   Orac Solaris Supremo
+Kevin Kitts    kkitts@his.com            Orac Linux Supremo
+
+FUTURE OF ORAC:
+
+We are aiming, within the next few versions, to move to a completely GPL
+solution.  If you'd like to help us do this, and join the Orac Mongers
+listing above, please let us know and we'll go from there.
+
+
+REVISION HISTORY:
+-----------------
 Vers Date   Comment
 ---- ----   -------
 0.01 Jan 99
@@ -101,11 +132,57 @@ Vers Date   Comment
             Thanks to Tim Bunce for constructive criticism.
 0.04 Apr 99 Adjustments after first DBI-Users release.
 0.05 Apr 99 More Adjustments after first DBI-Users release.
+            Thanks in particular to Sean Hull for support.
 0.06 Apr 99 Cleaned up a few extraneous debug statements.  Decided to not
-            attempt ports, after hearing from several Linux users that
+            attempt ports, after hearing from some Linux users that
             Orac ran "out-of-the-box", also NT and my mind do not fit
-            together.
+            together.  Also, must add more functionality.
             Tasklist this time, resizing of windows should be better.
-            Hit Ratios values should be clearer.
+            Hit Ratios values should be clearer.  
+            Thanks especially to Kevin Kitts.
+0.07 May 99 More Buggette cleaning, and better screen resizing on Form.
+            MTS support, under the Tuning button (thanks to Steve Shaw).
+            Background colour option added (thanks to Honza Pazdziora)
+            under File option.
+            Language Independence added, edit the txt/language.txt file
+            to change all Orac Menus, buttons etc, to your own text.
+            New 'My Tools' menu Option created to add your own SQL 
+            reports on-the-fly.
+            (thanks to Jared Still for the inspiration on this one)
+            Addition of 'User' field on main database connection
+            screen to allow DBAs to use secure system-like users,
+            with more security conscious permissions.
+            (Thanks to Kevin Kitts for this one).
+
+
+EXTRA NOTES FOR LINUX USERS:
+
+The following summarised notes have been taken from 
+Kevin Kitts' Orac home page:
+
+=> http://www.kkitts.com/orac-dba/
+
+If you'd like any more detail, please go there for
+more information.
+
+Requirements for Runing ORAC-DBA (under Linux)
+----------------------------------------------
+perl 5.05 
+Tk 800_014 perl module (www.cpan.org) 
+DBI/DBD perl modules (www.hermetica.com) 
+ORAC-DBA Download the latest version 
+
+Using ORAC-DBA under Linux 
+--------------------------
+I've found a number of problems running ORAC-DBA under RedHat 5.2. In order 
+to get things to work it was necessary to get the latest *source* rpm for 
+perl and rebuild perl. The man pages for rpm will explain how to do this 
+rebuild - it is very straightforward. Also, the latest version of the 
+perl Tk module (800_014) will be required as well. Lastly, you'll need 
+to get the DBI/DBD modules and compile them. 
+
+Make sure that you can get sql*plus to work first. If that works, make sure 
+that the DBI/DBD make tests pass. If all of the above condtions hold true 
+you should have no problem running ORAC-DBA.
 
 EOF
