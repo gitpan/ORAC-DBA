@@ -22,11 +22,25 @@ use Tk;
 use Cwd;
 use DBI;
 use Tk::DialogBox;
+sub print_grant_orac {
+   package main;
+   my($lev,$own,$tab,$grantee,$priv) = @_;
+#234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890
+$^A = "";
+$str = formline <<'END',$lev,$own,$tab,$grantee,$priv;
+^<<<< ^>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ^<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< ^<<<<<<<<<<<<<<<<<<<< ~~
+END
+print TEXT "$^A";
+}
 sub grant_orac {
    package main;
-   printf TEXT "\nDirect Object Grants " .
-               "for $v_db:\n\n%4s %14s %29s %18s %10s\n\n", 
-               'LVL', 'OWNER', 'TABLE_NAME', 'GRANTEE', 'PRIVILEGE';
+   printf TEXT "Direct Object Grants for $v_db:\n\n";
+
+   my @titles = ('Level', 'Owner', 'Table Name', 'Grantee', 'Privilege');
+   orac_Secur::print_grant_orac( @titles );
+
+   my @titles = ('-----', '-----', '----------', '-------', '---------');
+   orac_Secur::print_grant_orac( @titles );
    
    my $v_command = orac_Utils::file_string('sql_files', 'orac_Secur',
                                            'grant_orac', '1','sql');
@@ -35,20 +49,28 @@ sub grant_orac {
    $rv = $sth->execute;
 
    while (@v_this_text = $sth->fetchrow) {
-      printf TEXT "%4s %14s %29s %18s %10s\n", 
-         $v_this_text[0],
-         $v_this_text[1],
-         $v_this_text[2],
-         $v_this_text[3],
-         $v_this_text[4];
-      }
+      orac_Secur::print_grant_orac( @v_this_text );
+   }
    $rc = $sth->finish;
    &see_plsql($v_command);
 }
+sub print_user_orac {
+   package main;
+   my($Level,$Priv,$Grantable,$Own,$Obj) = @_;
+#234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890
+$^A = "";
+$str = formline <<'END',$Level,$Priv,$Grantable,$Own,$Obj;
+^<<<<<<< ^>>>>>>>>>>>>>>>>>>>>>>>>> ^>>>> ^>>>>>>>>>>>>>>>>>>>>>>>> ^<<<<<<<<<<<<<<<<<<<<<<<<<<<<< ~~
+END
+print TEXT "$^A";
+}
 sub user_orac {
    package main;
-   printf TEXT "\nAll Privs Report for $v_db:\n\n%-8s %24s %4s %9s %30s\n\n", 
-               'LEVEL', 'PRIVILEGE', 'GRANTABLE', 'OWNER', 'TABLE_NAME';
+   printf TEXT "All Privileges Report for $v_db:\n\n";
+   orac_Secur::print_user_orac('Level', 'Privilege', 'Grant able?', 
+                               'Owner', 'Object Name');
+   orac_Secur::print_user_orac('-----', '---------', '-----', 
+                               '-----', '-----------');
    
    my $v_command = orac_Utils::file_string('sql_files', 'orac_Secur',
                                            'user_orac', '1','sql');
@@ -57,20 +79,29 @@ sub user_orac {
    $rv = $sth->execute;
 
    while (@v_this_text = $sth->fetchrow) {
-      printf TEXT "%-8s %24s %4s %9s %30s\n", 
-         $v_this_text[0],
-         $v_this_text[1],
-         $v_this_text[2],
-         $v_this_text[3],
-         $v_this_text[4];
-      }
+      orac_Secur::print_user_orac( @v_this_text );
+   }
    $rc = $sth->finish;
    &see_plsql($v_command);
 }
+sub print_tab_orac {
+   package main;
+   my($Grantor,$Grantee,$Table,$Priv, $Own, $Grantable) = @_;
+#234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890
+$^A = "";
+$str = formline <<'END',$Grantor,$Grantee,$Table,$Priv, $Own, $Grantable;
+^<<<<<<<<<<<<<<< ^>>>>>>>>>>>>>>>>>>>>>>> ^<<<<<<<<<<<<<<<<<<<<<<<<<<<<< ^>>>>>>>>> ^>>>>>>> ^>>>> ~~
+END
+print TEXT "$^A";
+}
 sub table_orac {
    package main;
-   printf TEXT "\nTable Grants for $v_db:\n\n%10s %18s %35s %10s %10s %3s\n\n",
-      'GRANTOR', 'GRANTEE', 'TABLE_NAME', 'PRIVILEGE', 'OWNER', 'GRANTABLE';
+   printf TEXT "Table Grants for $v_db:\n\n";
+
+   orac_Secur::print_tab_orac('Grantor', 'Grantee', 'Object Name', 
+                              'Privilege', 'Owner', 'Grantable?');
+   orac_Secur::print_tab_orac('-------', '-------', '-----------', 
+                              '---------', '-----', '-----');
    
    my $v_command = orac_Utils::file_string('sql_files', 'orac_Secur',
                                            'table_orac', '1','sql');
@@ -79,14 +110,8 @@ sub table_orac {
    $rv = $sth->execute;
 
    while (@v_this_text = $sth->fetchrow) {
-      printf TEXT "%10s %18s %35s %10s %10s %3s\n",
-         $v_this_text[0],
-         $v_this_text[1],
-         $v_this_text[2],
-         $v_this_text[3],
-         $v_this_text[4],
-         $v_this_text[5];
-      }
+      orac_Secur::print_tab_orac( @v_this_text );
+   }
    $rc = $sth->finish;
    &see_plsql($v_command);
 }

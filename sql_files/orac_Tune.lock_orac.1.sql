@@ -1,5 +1,5 @@
- select rpad(osuser, 11)||lpad(p.spid, 5) osuser, 
- rpad(s.username,20)||lpad(s.sid, 4)||lpad(s.serial#, 6) username, 
+ select osuser, p.spid, 
+ s.username,s.sid,s.serial#,
          decode(l.type, 
                  'MR', 'Media Reco', 
                  'RT', 'Redo Thred', 
@@ -33,8 +33,8 @@
                  l.type <> 'TM' and 
                  (l.type <> 'TX' or l.type = 'TX' and l.lmode <> 6) 
  union 
- select rpad(osuser, 11)||lpad(p.spid, 5) osuser, 
- rpad(s.username,20)||lpad(s.sid, 4)||lpad(s.serial#, 6) username, 
+ select osuser, p.spid, 
+ s.username,s.sid, s.serial#,
          decode(l.type, 
                  'MR', 'Media Reco', 
                  'RT', 'Redo Thred', 
@@ -68,8 +68,8 @@
                  s.username <> ' ' and 
                  s.paddr = p.addr 
  union 
- select rpad(osuser, 11)||lpad(p.spid, 5) osuser, 
- rpad(s.username,20)||lpad(s.sid, 4)||lpad(s.serial#, 6) username, 
+ select osuser,p.spid, 
+ s.username,s.sid, s.serial#, 
          decode(l.type, 
                  'MR', 'Media Reco', 
                  'RT', 'Redo Thred', 
@@ -103,4 +103,4 @@
                  trunc(l.id1/65536) = r.usn and 
                  s.username <> ' ' and 
                  s.paddr = p.addr 
- order by 5, 6 
+ order by 8, 9 

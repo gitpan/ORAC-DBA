@@ -1,3 +1,4 @@
-Particularly useful in conjunction with the invalid object compiler. Brings up a pick list of invalid objects.
-Double-click on your choice, and it prints out the errors associated with the compilation of that object. (When you
-wish to close this window, please use the regular 'Dismiss' button or this option will not un-grey on the menu.)
+Useful in conjunction with the invalid object compiler. Brings up pick list of 
+invalid objects.  Double-click on choice, and it prints out errors associated 
+with compilation of that object. (When you wish to close this window, please 
+use regular 'Dismiss' button or option will not un-grey on the menu.)

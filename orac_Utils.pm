@@ -282,7 +282,6 @@ sub view_admin {
           $view_dialog->Label( 
                text   => "Mark individual lines " .
                          "for delete or mark all appropriately",
-               font   => $main::helvet_14,
                anchor => 'n',
                height => 1);
       $label->pack();
@@ -294,15 +293,12 @@ sub view_admin {
    
       $tiler->Manage( $tiler->Label(
                          -text     => 'Delete?',
-                         -font => $main::helvet_10,
                          -relief   => 'groove')->pack(@packer));
       $tiler->Manage( $tiler->Label(
                          -text     => 'Logged Entry',
-                         -font => $main::helvet_10,
                          -relief   => 'groove')->pack(@packer));
       $tiler->Manage( $tiler->Label(
                          -text     => 'Timestamp',
-                         -font => $main::helvet_10,
                          -relief   => 'groove')->pack(@packer));
       @del_cols;
       $del_count = 0;
@@ -341,7 +337,6 @@ sub view_admin {
       if ($del_count < 0){
          $tiler->Manage( $tiler->Label(
                             -text     => 'no rows found',
-                            -font     => $main::helvet_10,
                             -relief   => 'flat')->pack(@packer));
       }
       else {
@@ -351,7 +346,6 @@ sub view_admin {
    
          $undelete_button = 
              $bot_bar->Button( text    => 'Mark Undelete All',
-                               font    => $main::helvet_18,
                                command => sub { $view_dialog->Busy;
                                                 &mark_all(0);
                                                 $view_dialog->Unbusy });
@@ -359,7 +353,6 @@ sub view_admin {
 
          $delete_button = 
              $bot_bar->Button( text    => 'Mark All for Delete',
-                               font    => $main::helvet_18,
                                command => sub { $view_dialog->Busy;
                                                 &mark_all(1);
                                                 $view_dialog->Unbusy });

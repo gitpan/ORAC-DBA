@@ -1,0 +1,5 @@
+
+Ideally, the library cache miss ratio should be under 1%.  Otherwise, 
+you may wish to increase the SHARED_POOL_SIZE and/or the OPEN_CURSORS 
+parameters.  Alternatively, get your applications to use more identical 
+SQL statements.

@@ -1,2 +1,2 @@
-This report monitors the free space within each tablespace, by data file.  This gives an early warning of any
-potential space problems.
+This report monitors the free space within each tablespace, by data file.  
+This gives early warning of any potential space problems.

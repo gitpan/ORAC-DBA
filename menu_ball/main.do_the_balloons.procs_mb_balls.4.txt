@@ -1,2 +1,3 @@
-Displays a selectable list of 'PADDR' addresses or 'SIDS', for use with killing rogue processes.  Developed in
-association with related SQL scripts by Steve Shaw (smshaw@uk.oracle.com).
+Displays a selectable list of 'PADDR' addresses or 'SIDS', for use with 
+killing rogue processes.  Developed in association with related SQL scripts 
+by Steve Shaw (smshaw@uk.oracle.com).

@@ -28,12 +28,8 @@ sub do_universal_form {
    $top = $_[0];
    $dbh = $_[1];
    $input = $_[2];
-   $max_width_of_form = 55;
-   $max_height_of_form = 10;
-
-   $helvet_10 = '-adobe-helvetica-bold-r-normal--10-80-75-75-p-46-*-1';
-   $helvet_14 = '-adobe-helvetica-bold-r-narrow--14-120-75-75-p-46-*-1';
-   $helvet_18 = '-adobe-helvetica-bold-r-narrow--18-120-75-75-p-46-*-1';
+   $max_width_of_form = 42;
+   $max_height_of_form = 8;
 
    ($owner, $table, $dummy) = split(/\./, $input);
 
@@ -44,14 +40,13 @@ sub do_universal_form {
          text   => "Provide SQL for Columns, " .
                    "indicate selection order & " .
                    "then press 'Select Information'",
-         font   => $helvet_14,
          anchor => 'n',
          height => 1);
    $label->pack();
 
    my $tiler = $build_dialog->Scrolled('Tiler');
    $tiler->configure(-rows => 10, 
-                     -columns => 5);
+                     -columns => 4);
 
    my $v_command =
           orac_Utils::file_string('sql_files', 'orac_TabHlist2',
@@ -65,23 +60,15 @@ sub do_universal_form {
    (@global_pl) = qw/-side left -pady 2 -anchor w/;
    $tiler->Manage( $tiler->Label(
                       -text     => 'Order By',
-                      -font => $helvet_10,
                       -relief   => 'groove')->pack(@global_pl));
    $tiler->Manage( $tiler->Label(
                       -text     => 'Column',
-                      -font => $helvet_10,
                       -relief   => 'groove')->pack(@global_pl));
    $tiler->Manage( $tiler->Label(
                       -text     => 'Select SQL',
-                      -font => $helvet_10,
                       -relief   => 'groove')->pack(@global_pl));
    $tiler->Manage( $tiler->Label(
                       -text     => 'Datatype',
-                      -font => $helvet_10,
-                      -relief   => 'groove')->pack(@global_pl));
-   $tiler->Manage( $tiler->Label(
-                      -text     => 'Nullable',
-                      -font => $helvet_10,
                       -relief   => 'groove')->pack(@global_pl));
    @ind_use_cols;
    @ind_actual_cols;
@@ -95,7 +82,6 @@ sub do_universal_form {
 	                           -relief   => 'flat')->pack(@global_pl));
       $tiler->Manage( $tiler->Label(
          -text     => $v_this_text[0],
-         -font =>  $helvet_10,
 	 -relief   => 'flat')->pack(@global_pl));
       $sql_entry[$ind_build_count] = "";
       $tiler->Manage ( $tiler->Entry(
@@ -103,12 +89,7 @@ sub do_universal_form {
          -background => 'white',
          -foreground => 'black'));
       $tiler->Manage( $tiler->Label(
-         -text     => $v_this_text[1],
-         -font =>  $helvet_10,
-	 -relief   => 'flat')->pack(@global_pl));
-      $tiler->Manage( $tiler->Label(
-         -text     => $v_this_text[2],
-         -font =>  $helvet_10,
+         -text     => "$v_this_text[1] $v_this_text[2]",
 	 -relief   => 'flat')->pack(@global_pl));
       $ind_actual_cols[$ind_build_count] = "$v_this_text[0]";
       $ind_data_length[$ind_build_count] = "$v_this_text[3]";
@@ -122,7 +103,6 @@ sub do_universal_form {
 
    $help_button = $bot_bar->Button( 
          text    => '  Help on Select SQL  ',
-         font    => $helvet_18,
          command => sub { $build_dialog->Busy;
                           orac_UnixHelp::help_orac($build_dialog,
                                                    'orac_TabHlist2', 
@@ -132,7 +112,6 @@ sub do_universal_form {
    $help_button->pack(side => 'left', anchor => 'w');
 
    $go_button = $bot_bar->Button( text    => '  Select Information  ',
-                                  font    => $helvet_18,
                                   command => sub { $build_dialog->Busy;
                                                    &selector;
                                                    $build_dialog->Unbusy });
@@ -227,11 +206,9 @@ sub and_finally_Brian {
    my $top_frame = $curr_dialog->Frame->pack(@layout_top_bar);
    my $top_label = $top_frame->Label( 
                  -text   => "Selection Results: ",
-                 -font   => $helvet_14,
                  -anchor => 'w')->pack(-side => 'left', -anchor => 'w');
    my $num_label = $top_frame->Label( 
                  -textvariable   => \$current_counter,
-                 -font           => $helvet_14,
                  -relief         => 'sunken',
                  -anchor         => 'e',
                  -height         => 1)->pack(-side => 'right', -anchor => 'e');
@@ -248,7 +225,6 @@ sub and_finally_Brian {
       }
       $tiler->Manage( $tiler->Label(
                                 -text     => $ind_actual_cols[$i],
-                                -font     =>  $helvet_10,
 	                        -relief   => 'flat')->pack(@global_pl));
       if ($within_limits == 1){
          $tiler->Manage ( $tiler->Entry(
@@ -302,7 +278,6 @@ sub and_finally_Brian {
    $generic_scale = 
      $control_bar->Scale( -orient => horizontal, 
                           -length => 400, 
-                          -font   => $helvet_14,
                           -label  => $record_label,
                           -sliderrelief => 'raised',
                           -from   => 1,
@@ -431,7 +406,6 @@ sub now_build_ord {
    my $label = $bot_dialog->Label( 
                  text   => "Please Arrange Index Order " .
                            "and then press 'Continue'",
-                 font =>  $helvet_14,
                  anchor => 'n',
                  height => 1);
    $label->pack(-side => 'top');
@@ -442,19 +416,16 @@ sub now_build_ord {
       if ($i <= $total_ind_count){
          $tiler->Manage( $tiler->Label(
                             -text     => "Order Position $i",
-                            -font => $helvet_10,
                             -relief   => 'groove')->pack(@global_pl));
       }
       else {
          if ($i == ($total_ind_count + 1)){
             $tiler->Manage( $tiler->Label(
                             -text     => "Column",
-                            -font => $helvet_10,
                             -relief   => 'groove')->pack(@global_pl));
          } else {
             $tiler->Manage( $tiler->Label(
                             -text     => "Descending?",
-                            -font => $helvet_10,
                             -relief   => 'groove')->pack(@global_pl));
          }
       }
@@ -475,7 +446,6 @@ sub now_build_ord {
             if ($jesus_column == ($total_ind_count + 1)){
                $tiler->Manage( $tiler->Label(
                                   -text     => $total_ind_array[$jesus_row],
-                                  -font => $helvet_10,
                                   -justify  => 'left',
                                   -relief   => 'flat')->pack(@global_pl));
             } else {

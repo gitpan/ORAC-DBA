@@ -22,141 +22,86 @@ use Tk;
 use Cwd;
 use DBI;
 use Tk::DialogBox;
-use Tk::Balloon;
 sub links_orac {
-   $local_top = $_[0];
-   $dbh = $_[1];
-   $v_db = $_[2];
+   package main;
 
    my $sth = $dbh->prepare(
        orac_Utils::file_string('sql_files','orac_Links','links_orac','1','sql')
                           ) || die $dbh->errstr;
    $rv = $sth->execute;
 
-   $here_we_are = 0;
+   my $here_we_are = 0;
+   my $v_this_text;
    while ($v_this_text = $sth->fetchrow) {
       if($here_we_are == 0){
-         $top = $local_top->DialogBox( -title => "Orac Links",
-                                       -buttons => [ "Dismiss" ]);
+         $orac_Links::dialog = $top->DialogBox( -title => "Orac Links",
+                                    -buttons => [ "Dismiss" ]);
       
-         $label = $top->Label( text   => "Double-Click Link",
-                               anchor => 'nw',
-                               relief => 'groove',
-                               height => 1);
+         $label = $orac_Links::dialog->Label( text   => "Double-Click Link",
+                                  anchor => 'nw',
+                                  relief => 'groove',
+                                  height => 1);
          $label->pack(side => 'top');
       
-         $link_list = 
-            $top->ScrlListbox(-height => 20, 
-                              -width  => 40,
-                              -background => $main::this_is_the_colour,
-                              -foreground => $main::this_is_the_forecolour,
+         $orac_Links::link_list = 
+            $orac_Links::dialog->ScrlListbox(-height => 20, 
+                                 -width  => 40,
+                                 -background => $main::this_is_the_colour,
+                                 -foreground => $main::this_is_the_forecolour,
             );
    
          $here_we_are = 1;
       }
-      $link_list->insert('end', $v_this_text);
+      $orac_Links::link_list->insert('end', $v_this_text);
    }
    $rc = $sth->finish;
    unless ($here_we_are == 1){
-      my $dialog = $local_top->DialogBox( -title => "Orac Warning",
+      my $warn_dialog = $orac_Links::dialog->DialogBox( 
+                                          -title => "Orac Warning",
                                           -buttons => [ "Dismiss" ]);
-      $dialog->add("Label", -text => "No database links found")->pack();
-      $dialog->Show;
+      $warn_dialog->add("Label", -text => "No database links found")->pack();
+      $warn_dialog->Show;
       return;
    }
-   $link_list->pack(side => 'left');
-   $link_list->bind('<Double-1>', sub { $top->Busy;&sel_link;$top->Unbusy } );
-   my $balloon = $top->Balloon();
-   $balloon->attach($link_list, 
-                    -msg => "Double-Click on required\nlink " .
-                            "bring up the links screen");
-   $top->Show();
+   $orac_Links::link_list->bind('<Double-1>', 
+                sub { $orac_Links::dialog->Busy;
+                      &clear_orac;
+                      package orac_Links;
+
+                      # I've had to do this named package stuff,
+                      # 'coz this may be a bug?
+
+                      &sel_link;
+                      package main;
+                      $orac_Links::dialog->Unbusy } );
+
+   $orac_Links::link_list->pack(side => 'left');
+   $orac_Links::dialog->Show();
 }
 sub sel_link {
-   $link = $link_list->get('active');
-   @v_small_db_link = split(/\./, $link);
-   $this_title = "Orac DBLink $link";
-   $this_top = $top->DialogBox( -title => $this_title,
-                                -buttons => [ "Dismiss" ]);
+   package main;
 
-   my(@layout_menu_bar) = qw/-side top -padx 5 -expand yes -fill both/;
-   $menu_bar = $this_top->Frame()->pack(@layout_menu_bar);
-   $menu_bar->Label(
-       -text        => 'Link Information',
-       -font        => '-adobe-helvetica-bold-r-narrow--18-120-75-75-p-46-*-1',
-       -borderwidth => 2,
-       -relief      => 'flat',
-       )->pack(-side => 'right', -anchor => 'e');
-   $link_mb = $menu_bar->Menubutton(text        => 'Link',
-                                    relief      => 'raised',
-                                    borderwidth => 2,
-                                     )->pack('-side' => 'left',
-                                             '-padx' => 2,
-                                            );
-   $link_mb->command(-label         => 'Database Link Info',
-                     -underline     => 14,
-                     -command       => sub { $this_top->Busy;
-                                             &link_orac;
-                                             $this_top->Unbusy } );
-   $link_mb->command(-label         => 'Database Link Synonyms',
-                     -underline     => 15,
-                     -command       => sub { $this_top->Busy;
-                                             &syn_orac;
-                                             $this_top->Unbusy } );
-   $link_mb->separator();
-   $link_mb->command(-label         => 'Source Using Database Link',
-                     -underline     => 0,
-                     -command       => sub { $this_top->Busy;
-                                             &source_orac;
-                                             $this_top->Unbusy } );
-   
-   $label = $this_top->Label( text   => "SPECIFIC DB_LINK $link Output:",
-                         anchor => 'n',
-                         relief => 'groove',
-                         width  => 120,
-                         height => 1);
-   $label->pack();
-   $v_text = 
-      $this_top->Scrolled('Text', 
-                          background => $main::this_is_the_colour,
-                          foreground => $main::this_is_the_forecolour);
-   $v_text->pack(-expand => 1,
-              -fil    => 'both');
-   tie (*TEXT, 'Tk::Text', $v_text);
-   
-   my $balloon = $this_top->Balloon();
-   my $link_mb_balls = $link_mb->cget(-menu);
-   $balloon->attach($link_mb_balls,
-	            -balloonposition => 'mouse',
-	            -msg => ['',
-         "This report displays the contents of 'dba_db_links' and the\n" .
-         'related information within the \'sys.link$\' table.' . "\n" .
-         "\n" .
-         'The \'sys.link$\' table is searched with just the first part' . "\n" .
-         "of the link, '$v_small_db_link[0]', in order to seek out\n" .
-         "possibly related information.",
-         "This report displays the contents of 'dba_synonyms' and its\n" .
-         "related information.\n" .
-         "\n" .
-         "The table is searched with just the first part of the named link,\n" .
-         "'$v_small_db_link[0]', in order to seek out " .
-         "possibly related information.",
-         '',
-         "This report displays all the distinct Owners, " .
-         "Names and Types of all the\n" .
-         "entries in 'dba_source' which contain " .
-         "the " . '\'@' . "$v_small_db_link[0]' string.",
-	           ]);
-   $this_top->Show();
+   $link = $orac_Links::link_list->get('active');
+   my @db_link = split(/\./, $link);
+
+   $top->Busy;
+   orac_Links::link_orac($link, $db_link[0]);
+   orac_Links::syn_orac($link, $db_link[0]);
+   orac_Links::source_orac($link, $db_link[0]);
+   $top->Unbusy;
 }
    
 sub link_orac {
-   printf TEXT "\n$link\n\ndba_db_links\n------------\n" .
-               "%-16s %32s %16s %30s %12s\n", 
-               'OWNER', 'DB_LINK', 'USERNAME', 'HOST', 'CREATED';
-   printf TEXT "%-16s %32s %16s %30s %12s\n", 
-               '-----', '-------', '--------', '----', '-------';
-   
+   package main;
+
+   my ($link,$db_link) = @_;
+
+   my @titles = ('OWNER', 'DB_LINK', 'USERNAME', 'HOST', 'CREATED');
+   orac_Links::print_link_stuff ( @titles );
+
+   my @titles = ('-----', '-------', '--------', '----', '-------');
+   orac_Links::print_link_stuff ( @titles );
+
    my $v_command = orac_Utils::file_string('sql_files', 'orac_Links',
                                            'link_orac', '1','sql');
    $v_command =~ s/orac_insert_link/$link/g;
@@ -165,18 +110,12 @@ sub link_orac {
    $rv = $sth->execute;
 
    @v_this_text = $sth->fetchrow;
-   printf TEXT "%-16s %32s %16s %30s %12s\n", 
-      $v_this_text[0],
-      $v_this_text[1],
-      $v_this_text[2],
-      $v_this_text[3],
-      $v_this_text[4];
+   orac_Links::print_link_stuff ( @v_this_text );
    $rc = $sth->finish;
 
-   my $small_db_link = $v_small_db_link[0];
    $v_command = orac_Utils::file_string('sql_files', 'orac_Links',
                                            'link_orac', '2','sql');
-   $v_command =~ s/orac_insert_small_db_link/$small_db_link/g;
+   $v_command =~ s/orac_insert_small_db_link/$db_link/g;
 
    my $sec_sth = $dbh->prepare( $v_command ) || die $dbh->errstr; 
    print TEXT "\n" . 'sys.link$' . "\n---------";
@@ -199,28 +138,55 @@ sub link_orac {
    }
    $rc = $sec_sth->finish;
 }
+
+sub print_link_stuff {
+   package main;
+
+   my($owner,$db_link,$username,$host,$created) = @_;
+
+#234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890
+$^A = "";
+$str = formline <<'END',$owner,$db_link,$username,$host,$created;
+^<<<<<<<<<<<<<< ^<<<<<<<<<<<<<<<<<<<<<<< ^<<<<<<<<<<<<<<< ^<<<<<<<<<<<<<<<<<<<<<<< ^>>>>>>>>>> ~~
+END
+print TEXT "$^A";
+}
+sub print_syn_stuff {
+   package main;
+
+   my($owner,$db_link,$tab_name,$syn_name,$tab_owner) = @_;
+
+#234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890
+$^A = "";
+$str = formline <<'END',$owner,$db_link,$username,$host,$created;
+^<<<<<<<<<<<<<< ^<<<<<<<<<<<<<<<<<< ^<<<<<<<<<<<<<<<<<<<< ^<<<<<<<<<<<<<<<<<< ^>>>>>>>>>>>>>>> ~~
+END
+print TEXT "$^A";
+}
 sub syn_orac {
-   printf TEXT "\ndba_synonyms\n------------\n%-16s %30s %20s %20s %20s\n", 
-      'OWNER', 'DB_LINK', 'TABLE_NAME', 'SYNONYM_NAME', 'TABLE_OWNER';
-   printf TEXT "%-16s %30s %20s %20s %20s\n", 
-      '-----', '-------', '----------', '------------', '-----------';
+   package main;
+
+   my($link,$db_link) = @_;
+
+   printf TEXT "\n\nDBA_SYNONYMS\n\n";
+
+   my @titles = ('OWNER','DB_LINK','TABLE_NAME','SYNONYM_NAME','TABLE_OWNER');
+   orac_Links::print_syn_stuff ( @titles );
+
+   my @titles = ('-----','-------','----------','------------','-----------');
+   orac_Links::print_syn_stuff ( @titles );
 
    my $small_db_link = $v_small_db_link[0];
    my $v_third_command = orac_Utils::file_string('sql_files', 'orac_Links',
                                                  'syn_orac', '1','sql');
-   $v_third_command =~ s/orac_insert_small_db_link/$small_db_link/g;
+   $v_third_command =~ s/orac_insert_small_db_link/$db_link/g;
 
    my $third_sth = $dbh->prepare( $v_third_command ) || die $dbh->errstr; 
    $rv = $third_sth->execute;
 
-   $v_counter = 0;
+   my $v_counter = 0;
    while(@v_this_text = $third_sth->fetchrow){
-      printf TEXT "%-16s %30s %20s %20s %20s\n", 
-         $v_this_text[0],
-         $v_this_text[1],
-         $v_this_text[2],
-         $v_this_text[3],
-         $v_this_text[4];
+      orac_Links::print_syn_stuff ( @v_this_text );
       $v_counter++;
    }
    if ($v_counter == 0){
@@ -229,31 +195,37 @@ sub syn_orac {
    $third_rc = $third_sth->finish;
 }
 sub source_orac {
+   package main;
+
+   my($link,$db_link) = @_;
+
    my $dialog_text =
-      "This Report could take SOME TIME to run.  " .
-      "Are you sure you wish to run it?";
-   my $dialog = $this_top->DialogBox( -title => "Orac Dialog",
-                                 -buttons => [ "Yes", "No" ]);
+      "DBA_SOURCE Report for " . '@' . "$db_link \n" .
+      "could take SOME TIME to run examining PL/SQL code. \n" .
+      "Do you wish to run it?";
+
+   my $dialog = $orac_Links::dialog->DialogBox( -title => "Orac Dialog",
+                                                -buttons => [ "Yes", "No" ]);
+
    $dialog->add("Label", -text => $dialog_text)->pack();
    my $button = $dialog->Show;
    if($button eq 'Yes'){
-      printf TEXT "\n" . '@' . "$v_small_db_link[0] appears in dba_source\n\n" .
-                  "%-30s %30s %12s\n" .
-                  "%-30s %30s %12s\n", 
+      printf TEXT "\n" . '@' . "$db_link appears in dba_source\n\n" .
+                  "%-24s %24s %12s\n" .
+                  "%-24s %24s %12s\n", 
          'OWNER', 'NAME', 'TYPE',
          '-----', '----', '----';
 
-      my $small_db_link = $v_small_db_link[0];
       my $v_fourth_command = orac_Utils::file_string('sql_files', 'orac_Links',
                                                     'source_orac', '1','sql');
-      $v_fourth_command =~ s/orac_insert_small_db_link/$small_db_link/g;
+      $v_fourth_command =~ s/orac_insert_small_db_link/$db_link/g;
 
       my $fourth_sth = $dbh->prepare( $v_fourth_command ) || die $dbh->errstr; 
       $rv = $fourth_sth->execute;
 
       $v_counter = 0;
       while(@v_this_text = $fourth_sth->fetchrow){
-         printf TEXT "%-30s %30s %12s\n",
+         printf TEXT "%-24s %24s %12s\n",
             $v_this_text[0],
             $v_this_text[1],
             $v_this_text[2];

@@ -126,30 +126,17 @@ sub roll_orac {
 }
 sub lock_orac {
    package main;
-   printf TEXT "\nLock report for the $v_db database:\n\n" . 
-      "%-16s  %-30s %10s %24s %10s %10s\n", 
-      '------O/S-------', 
-           '------------ORACLE------------', 
-                '', 
-                     '', 
-                          '', 
-                               'LOCK'; 
-   printf TEXT 
-      "%-10s %5s  %-15s %8s %5s %10s %24s %10s %10s\n", 
-      'USERNAME', 'PID',
-                'USERNAME', 'ID', 'SER',
-                              'TYPE', 
-                                   'OBJECT NAME', 
-                                        'LOCK HELD', 
-                                             'REQUESTED'; 
-   printf TEXT 
-      "%-16s  %-30s %10s %24s %10s %10s\n", 
-      '----------------',
-            '------------------------------',
-                  '----------',
-                       '------------------------',
-                            '----------',
-                                 '----------';
+   printf TEXT "Lock report for the $v_db database:\n\n";
+
+   my @titles = ('OS_User', 'OS_Pid', 'Ora_User', 'Ora_ID', 'Ora_Ser', 
+                 'Type', 'Object', 'Lock Held', 'Lock Rquestd');
+   orac_Tune::print_locks( @titles );
+
+   my @titles = ('-------', '------', '--------', '------', '-------', 
+                 '----', '------', '---------', '------------');
+   orac_Tune::print_locks( @titles );
+
+
    my $v_command = 
           orac_Utils::file_string('sql_files', 'orac_Tune',
                                   'lock_orac','1','sql');
@@ -160,19 +147,24 @@ sub lock_orac {
 
    while (@v_this_text = $sth->fetchrow) {
       $v_fetch_count++;
-      printf TEXT "%-16s  %-30s %10s %24s %10s %10s\n", 
-         $v_this_text[0],
-         $v_this_text[1],
-         $v_this_text[2],
-         $v_this_text[3],
-         $v_this_text[4],
-         $v_this_text[5];
+      orac_Tune::print_locks( @v_this_text );
    }
    $rc = $sth->finish;
    if($v_fetch_count == 0){
       print TEXT "no rows found\n";
    }
    &see_plsql($v_command);
+}
+sub print_locks {
+   package main;
+   my($OS_User,$OS_Pid,$Ora_User,$ID,$Ser,$Typ,$Obj,$Hld,$Req,$dummy) = @_;
+
+#234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890
+$^A = "";
+$str = formline <<'END',$OS_User,$OS_Pid,$Ora_User,$ID,$Ser,$Typ,$Obj,$Hld,$Req;
+^<<<<<<<<< ^>>>>> ^<<<<<<<<<<<<< ^>>>>> ^>>>>>> ^<<<<<<< ^<<<<<<<<<<<<<<<< ^>>>>>>>>> ^>>>>>>>>>>> ~~
+END
+print TEXT "$^A";
 }
 sub nls_db_param_orac{
    package main;
@@ -345,48 +337,6 @@ $str = formline <<'END',$col, $val;
 END
 print TEXT "$^A";
 }
-      
-sub vdoll_param_orac{
-   package main;
-   print TEXT "\n" . 'v$parameter' . " information for $v_db:\n\n";
-   print TEXT "FLAGS=> ISDEFAULT:ISSES_MODIFIABLE:" .
-              "ISSYS_MODIFIABLE:ISMODIFIED:ISADJUSTED\n";
-   print TEXT "        (T = TRUE,F = FALSE,I = IMMEDIATE,D = DEFERRED)\n\n";
-   orac_Tune::print_complex('NUM','TYP','FLAGS','NAME', 
-                            'DESCRIPTION', 'VALUE');
-   orac_Tune::print_complex('---','---','-----','----', 
-                            '-----------', '-----');
-   
-   my $v_command =
-          orac_Utils::file_string('sql_files', 'orac_Tune',
-                                  'vdoll_param_orac','1','sql');
-
-   my $sth = $dbh->prepare( $v_command ) || die $dbh->errstr; 
-   $rv = $sth->execute;
-
-   while (@v_this_text = $sth->fetchrow) {
-      orac_Tune::print_complex(
-            $v_this_text[0],
-            $v_this_text[1],
-            $v_this_text[2],
-            $v_this_text[3],
-            $v_this_text[4],
-            $v_this_text[5]);
-   }
-   $rc = $sth->finish;
-   &see_plsql($v_command);
-}
- 
-sub print_complex {
-   package main;
-   my($num, $typ, $flags, $name, $desc, $value, $dummy) = @_;
-$^A = "";
-$str = formline <<'END',$num, $typ, $flags, $name, $desc, $value;
-^<< ^<< ^<<<<<<<<  ^<<<<<<<<<<<<<<<<<<<<<<<<<<<  ^<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<  ^<<<<<<<<<<<<<<<<< ~~
-END
-print TEXT "$^A";
-}
-      
 sub vdoll_param_simp{
    package main;
    print TEXT "\n" . 'Show Parameters' . " for $v_db:\n\n";
@@ -433,12 +383,8 @@ sub dc_hit_ratio {
    while (@v_this_text = $sth->fetchrow) {
       printf TEXT "%11.2f%%\n", $v_this_text[0];
    }
-   print TEXT "\nOracle recommends trying to keep the hit ratio around " .
-              "10-15%, or lower.  To improve dictionary cache performance, \n" .
-              "you may want to add memory to the " .
-              "shared pool by increasing the value " .
-              "set for SHARED_POOL_SIZE.\n";
-
+   print TEXT orac_Utils::file_string('txt_files', 'orac_Tune',
+                                      'dc_hit_ratio','1','txt');
    $rc = $sth->finish;
    &see_plsql($v_command);
 }
@@ -457,10 +403,8 @@ sub lc_hit_ratio {
    while (@v_this_text = $sth->fetchrow) {
       printf TEXT "%11.2f%%\n", $v_this_text[0];
    }
-   print TEXT "\nIdeally, the library cache miss ratio should be under 1%.  " .
-              "Otherwise, you may wish to increase the SHARED_POOL_SIZE \n" .
-              "and/or the OPEN_CURSORS parameters.  Alternatively, get your " .
-              "applications to use more identical SQL statements.\n";
+   print TEXT orac_Utils::file_string('txt_files', 'orac_Tune',
+                                      'lc_hit_ratio','1','txt');
 
    $rc = $sth->finish;
    &see_plsql($v_command);
@@ -492,13 +436,8 @@ sub latch_hit_ratio {
    if ($counter == 0){
       print TEXT "no rows found\n";
    }
-   print TEXT "\n" .
-              "If the same process shows up " .
-              "time and time again as holding the latch " .
-              "named, and the wait ratio is " .
-              "high for that\nlatch, then there could " .
-              "be a problem with an event causing a wait on the system." .
-              "\n";
+   print TEXT orac_Utils::file_string('txt_files', 'orac_Tune',
+                                      'latch_hit_ratio','1','txt');
 
    $rc = $sth->finish;
    &see_plsql($v_command);
@@ -552,7 +491,7 @@ sub vdoll_version{
  
 sub sgastat {
    package main;
-   printf TEXT "\n" . 'v$sgastat' . " information for $v_db:\n\n";
+   printf TEXT 'v$sgastat' . " information for $v_db:\n\n";
    orac_Tune::print_sgastat('POOL','NAME','BYTES');
    orac_Tune::print_sgastat('----','----','-----');
 
@@ -574,9 +513,12 @@ sub sgastat {
 sub print_sgastat {
    package main;
    my($pool, $name, $bytes, $dummy) = @_;
+
+# Note, we've switched round 'bytes' and 'name'.
+
 $^A = "";
-$str = formline <<'END',$pool, $name, $bytes;
-^<<<<<<<<<<   ^<<<<<<<<<<<<<<<<<<<<<<<<<   ^>>>>>>>>> ~~
+$str = formline <<'END',$pool, $bytes, $name;
+^<<<<<<<<<<<<<<  ^>>>>>>>>>>> ^<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< ~~
 END
 print TEXT "$^A";
 }

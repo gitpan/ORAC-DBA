@@ -48,7 +48,6 @@ use orac_AllGen;
 use orac_TabSpace;
 use orac_TabDet;
 use orac_MaxExt;
-use orac_AutoExt;
 use orac_SynHlist;
 use orac_SeqHlist;
 use orac_GrantHlist;
@@ -70,10 +69,6 @@ use orac_SnapLogHlist;
 
 $oracle_home = $ENV{"ORACLE_HOME"};
 
-$helvet_10 = '-adobe-helvetica-bold-r-normal--10-80-75-75-p-46-*-1';
-$helvet_14 = '-adobe-helvetica-bold-r-narrow--14-120-75-75-p-46-*-1';
-$helvet_18 = '-adobe-helvetica-bold-r-narrow--18-120-75-75-p-46-*-1';
-
 $top = MainWindow->new();
 
 $menu_bar = $top->Frame()->pack(side => 'top', anchor => 'w');
@@ -84,14 +79,12 @@ $this_is_the_curr_time = orac_Utils::short_min_timestring();
 # Oh Thready clock, how I love you, but Tim says no
 
 #$clock_config = $menu_bar->Label(  -textvariable => \$this_is_the_curr_time,
-#      -font => '-adobe-helvetica-bold-r-narrow--18-120-75-75-p-46-*-1',
 #      -borderwidth  => 2,
 #      -relief       => 'sunken',
 #      )->pack(-side => 'right', -anchor => 'e');
 
 $menu_bar->Label(  
      -text        => 'Control Panel',
-     -font        => '-adobe-helvetica-bold-r-narrow--18-120-75-75-p-46-*-1',
      -borderwidth => 2,
      -relief      => 'flat',
      )->pack(-side => 'right', -anchor => 'e');
@@ -128,18 +121,25 @@ $menu_text = 'Background Colour Menu';
 $file_mb->cascade(-label => $menu_text, -underline => 0);
 $colour_menu = $file_mb->cget(-menu);
 $actual_colours = $colour_menu->Menu;
+
 $file_mb->entryconfigure($menu_text, -menu => $actual_colours);
 
 open(COLOUR_FILE, "txt_files/colour_file.txt");
 while(<COLOUR_FILE>){
    chomp;
-   $actual_colours->radiobutton(
-                        -label      => $_,
-                        -background => $_,
-                        -command => [\&change_back_col],
-                        -variable   => \$main::this_is_the_colour,
-                        -value      => $_,
-                );
+   eval {
+      $actual_colours->radiobutton(
+                           -label      => $_,
+                           -background => $_,
+                           -command => [\&change_back_col],
+                           -variable   => \$main::this_is_the_colour,
+                           -value      => $_,
+                   );
+   };
+   if ($@){
+      orac_Utils::log_message(
+         "Some problem with $_ background colour");
+   }
 }
 close(COLOUR_FILE);
 
@@ -147,18 +147,25 @@ $menu_text = 'Foreground Colour Menu';
 $file_mb->cascade(-label => $menu_text, -underline => 0);
 $fore_colour_menu = $file_mb->cget(-menu);
 $fore_actual_colours = $fore_colour_menu->Menu;
+
 $file_mb->entryconfigure($menu_text, -menu => $fore_actual_colours);
 
 open(COLOUR_FILE, "txt_files/colour_file.txt");
 while(<COLOUR_FILE>){
    chomp;
-   $fore_actual_colours->radiobutton(
-                        -label      => $_,
-                        -background => $_,
-                        -command => [\&change_fore_col],
-                        -variable   => \$main::this_is_the_forecolour,
-                        -value      => $_,
-                );
+   eval {
+      $fore_actual_colours->radiobutton(
+                           -label      => $_,
+                           -background => $_,
+                           -command => [\&change_fore_col],
+                           -variable   => \$main::this_is_the_forecolour,
+                           -value      => $_,
+                   );
+   };
+   if ($@){
+      orac_Utils::log_message(
+         "Some problem with $_ foreground colour");
+   }
 }
 close(COLOUR_FILE);
 
@@ -172,7 +179,9 @@ $admin_text = 'Administration';
 $admin_tag = $file_mb->cascade(-label => $admin_text, -underline => 0);
 $admin_menu = $file_mb->cget(-menu);
 $admin_list = $admin_menu->Menu;
+
 $file_mb->entryconfigure($admin_text, -menu => $admin_list);
+
 $view_admin_tag = $admin_list->command(
                        -label => 'View Admin Data', 
                        -underline => 1, 
@@ -215,13 +224,19 @@ $tablespace_mb->command(
 $tablespace_mb->command(
    -label     => 'Max Extents Free Space',
    -underline => 0,
-   -command   => sub { $top->Busy;orac_MaxExt::max_ext_orac;$top->Unbusy } );
-$tablespace_mb->separator();
-$grey_auto = 
- $tablespace_mb->command(
-   -label     => 'Auto Extents',
-   -underline => 0,
-   -command   => sub { $top->Busy;orac_AutoExt::auto_ext_orac;$top->Unbusy } );
+   -command   => sub { $top->Busy;
+                       &clear_orac;
+                       orac_MaxExt::max_ext_orac;
+                       $top->Unbusy } );
+
+$grey_dbas = $tablespace_mb->command(
+   -label         => 'DBA Tables Viewer',
+   -underline => 1,
+   -command   => sub { $top->Busy;
+                       &clear_orac;
+                       orac_DBAViewer::dbas_orac;
+                       $top->Unbusy } );
+
 $sql_gen_mb = $menu_bar->Menubutton(-text => 'Objects',
                                     -relief => 'raised',
                                     -borderwidth => 2, 
@@ -377,24 +392,7 @@ $sql_gen_mb->command(
                             &clear_orac;
                             orac_TabSpHlist::tablespace_orac($top, $dbh);
                             $top->Unbusy } );
-$grey_dbas = $sql_gen_mb->command(
-   -label         => 'DBA Tables Viewer',
-   -underline => 1,
-   -command   => sub { $top->Busy;
-                       &clear_orac;
-                       orac_DBAViewer::dbas_orac;
-                       $top->Unbusy } );
-$link_mb = $menu_bar->Menubutton(-text        => 'Links',
-                                 -relief      => 'raised',
-                                 -borderwidth => 2,
-                                 -underline   => 0,
-                                )->pack('-side' => 'left', '-padx' => 2,);
-$link_mb->command(
-   -label         => 'Links Menu',
-   -underline     => 0,
-   -command       => sub { $top->Busy;
-                           orac_Links::links_orac($top, $dbh, $v_db);
-                           $top->Unbusy } );
+
 $users_mb = $menu_bar->Menubutton(-text        => 'Users',
                                   -relief      => 'raised',
                                   -borderwidth => 2,
@@ -518,24 +516,13 @@ $roll_mb = $menu_bar->Menubutton(-text        => 'Tuning',
                            orac_Tune::sgastat;
                            $top->Unbusy}, 
         -underline => 1,],
-       [Cascade   => 'Show Parameters', -underline => 9, -menuitems =>
-        [
-         [Button  => 'v$parameter complex', 
-          -command => sub {
-                           $top->Busy;
-                           &clear_orac();
-                           orac_Tune::vdoll_param_orac;
-                           $top->Unbusy}, 
-          -underline => 4,],
-         [Button  => 'v$parameter simple', 
-          -command => sub {
-                           $top->Busy;
-                           &clear_orac();
-                           orac_Tune::vdoll_param_simp;
-                           $top->Unbusy}, 
-          -underline => 4,],
-        ],
-       ],
+       [Button   => 'Show Parameters', 
+        -command => sub {
+                         $top->Busy;
+                         &clear_orac();
+                         orac_Tune::vdoll_param_simp;
+                         $top->Unbusy}, 
+        -underline => 4,],
       ],
      ],
      [Cascade   => '~Background Processes', -menuitems =>
@@ -669,7 +656,7 @@ $roll_mb = $menu_bar->Menubutton(-text        => 'Tuning',
                            $top->Unbusy }, ],
       ],
      ],
-     [Cascade   => '~Locks & Pigs', -menuitems =>
+     [Cascade   => '~Locks & Heavy Memory Hoggers', -menuitems =>
       [
        [Button  => "Locks currently held", -underline => 1,
         -command => sub { 
@@ -707,7 +694,7 @@ $roll_mb = $menu_bar->Menubutton(-text        => 'Tuning',
                            &clear_orac;
                            orac_Wait::tune_wait;
                            $top->Unbusy }, ],
-       [Button  => "Memory Pigs", -underline => 0, 
+       [Button  => "Memory Hoggers", -underline => 0, 
         -command => sub { 
                            $top->Busy;
                            &clear_orac;
@@ -720,9 +707,8 @@ $top_header_text = "Not Connected";
 $label = 
  $top->Label(textvariable   => \$top_header_text,
              anchor => 'n',
+             width => '100',
              relief => 'groove',
-             font   => '-adobe-helvetica-bold-r-narrow--14-120-75-75-p-46-*-1',
-             width  => 135,
              height => 1);
 $label->pack();
 $procs_mb = $menu_bar->Menubutton(-text        => 'Who',
@@ -787,6 +773,16 @@ $procs_mb->command(
   -command   => sub {$top->Busy;
                      orac_RoleUser::single_role_user($top,$dbh,'Role');
                      $top->Unbusy });
+
+$procs_mb->separator();
+$procs_mb->command(
+   -label         => 'Links',
+   -underline     => 0,
+   -command       => sub { $top->Busy;
+                           &clear_orac;
+                           orac_Links::links_orac();
+                           $top->Unbusy } );
+
 $unix_help_mb = $menu_bar->Menubutton(-bitmap      => 'questhead',
                                       -relief      => 'raised',
                                       -borderwidth => 2,
@@ -826,12 +822,12 @@ tie (*TEXT, 'Tk::Text', $v_text);
 my(@layout_status_bar) = qw/-side bottom -padx 5 -expand yes -fill both/;
 $status_bar = $top->Frame->pack(@layout_status_bar);
 
-$balloon_status = $status_bar->Label(-height => 4, 
-                                     -width => '120', 
+$balloon_status = $status_bar->Label(-height => 4, -width => 100,
                                      -relief => 'sunken');
 
 $balloon_status->pack(-side => "bottom", 
                       -fill => "y", 
+                      -expand => 'yes',
                       -padx => 2, 
                       -pady => 1);
 
@@ -870,7 +866,7 @@ open(MY_HOSTNAME, "hostname|");
 @this_hostname = <MY_HOSTNAME>;
 $this_hostname = $this_hostname[0];
 $this_hostname =~ s/\s//g;
-$this_orac_version = 'ORAC-DBA-0.01';
+$this_orac_version = 'ORAC-DBA-0.02';
 close(MY_HOSTNAME);
 
 $this_title = "Orac-Control Panel ($this_hostname)";
@@ -889,9 +885,21 @@ undef $main::this_is_the_forecolour;
 if(orac_Utils::login() != 1){
    &back_orac();
 } else {
-   $v_text->configure(
-              -background => $main::this_is_the_colour, 
-              -foreground => $main::this_is_the_forecolour);
+   eval {
+      $v_text->configure(
+                 -background => $main::this_is_the_colour, 
+                 -foreground => $main::this_is_the_forecolour);
+   };
+   if ($@){
+      orac_Utils::log_message(
+        "Some problem with configuring startup colours");
+
+      $main::this_is_the_colour = "white"; 
+      $main::this_is_the_forecolour = "black";
+      $v_text->configure(
+                 -background => $main::this_is_the_colour, 
+                 -foreground => $main::this_is_the_forecolour);
+   }
 
    orac_Utils::log_message("valid login $v_login to ${this_x_display}");
 
@@ -1064,20 +1072,6 @@ sub choose_database {
    my @v_this_text = $sth->fetchrow;
    my $rc = $sth->finish;
    $Block_Size = $v_this_text[0];
-
-   my $this_command = orac_Utils::file_string('sql_files', 'main',
-                                           'choose_database', '2','sql');
-
-   my $this_sth = $dbh->prepare( $this_command ) || die $dbh->errstr;
-   $rv = $this_sth->execute;
-   my @this_text = $this_sth->fetchrow;
-   my $this_rc = $this_sth->finish;
-   if ($this_text[0] > 0){
-      $grey_auto->configure(-state => 'active');
-   } 
-   else {
-      $grey_auto->configure(-state => 'disabled');
-   }
 }
 
 # A bit of cookbook magic
@@ -1098,7 +1092,7 @@ BEGIN {
 
 sub see_plsql {
    my ($v_this_text, $dummy) = @_;
-   my $v_bouton = $v_text->Button(-text => 'See PL/SQL',
+   my $v_bouton = $v_text->Button(-text => 'See SQL',
                                   -command => sub { 
                                           $top->Busy;
                                           &banana_see_sql($v_this_text);
@@ -1132,7 +1126,7 @@ sub banana_see_sql {
    $loc_text->pack(-expand => 1, -fil    => 'both');
    tie (*THIS_TEXT, 'Tk::Text', $loc_text);
    print 
-     THIS_TEXT "rem\nrem  ORAC Generated PL/SQL Report Code:\nrem\n$v_text\n";
+     THIS_TEXT "rem\nrem  ORAC Generated SQL Report Code:\nrem\n$v_text\n";
    $dialog->Show;
 }
 sub server_orac {
@@ -1140,9 +1134,6 @@ sub server_orac {
          $top->DialogBox(
                -title => 'Orac Release, Server & Client Information',
                -buttons => [ "Dismiss" ]);
-
-   my $small_font = '-adobe-helvetica-medium-r-normal--12-80-75-75-p-46-*-1';
-   my $big_font = '-adobe-helvetica-bold-r-narrow--14-120-75-75-p-46-*-1';
 
    my $notebook = $server_dialog->add('NoteBook', 
                                       -ipadx => 6, 
@@ -1173,7 +1164,7 @@ sub server_orac {
                                       -label => 'Login Time', 
                                       -underline => 1);
 
-   my $local_date = '27th January 1999';
+   my $local_date = '15th February 1999';
    my $local_author = 'Andy Duncan';
    my $local_email = 'andy_j_duncan@yahoo.com';
 
@@ -1268,49 +1259,48 @@ sub do_the_balloons {
          &get_balloon_txt('main', 'do_the_balloons','yes_clear', 0);
    my @choose_button_txt = 
          &get_balloon_txt('main', 'do_the_balloons','choose_button', 0);
+
    $balloon->attach($clear_button,  -msg => $clear_button_txt[0]);
    $balloon->attach($no_clear,      -msg => $no_clear_txt[0]);
    $balloon->attach($yes_clear,     -msg => $yes_clear_txt[0]);
    $balloon->attach($choose_button, -msg => $choose_button_txt[0]);
+
    my @file_mb_txt = get_balloon_txt('main', 'do_the_balloons','file_mb', 0);
    $balloon->attach($file_mb, -msg => $file_mb_txt[0]);
+
    my @file_mb_balls_txt = 
          &get_balloon_txt('main', 'do_the_balloons','file_mb_balls', 11);
    my $file_mb_balls = $file_mb->cget(-menu);
+
    $balloon->attach($file_mb_balls,
    	         -balloonposition => 'mouse',
-   	         -msg => [$file_mb_balls_txt[0], $file_mb_balls_txt[1],
-                          $file_mb_balls_txt[2], $file_mb_balls_txt[3],
-                          $file_mb_balls_txt[4], $file_mb_balls_txt[5],
-                          $file_mb_balls_txt[6], $file_mb_balls_txt[7],
-                          $file_mb_balls_txt[8], $file_mb_balls_txt[9],
-                          $file_mb_balls_txt[10], $file_mb_balls_txt[11],
-   	        ]);
+    	         -msg => [$file_mb_balls_txt[0], $file_mb_balls_txt[1],
+                           $file_mb_balls_txt[2], $file_mb_balls_txt[3],
+                           $file_mb_balls_txt[4], $file_mb_balls_txt[5],
+                           $file_mb_balls_txt[6], $file_mb_balls_txt[7],
+                           $file_mb_balls_txt[8], $file_mb_balls_txt[9],
+                           $file_mb_balls_txt[10], $file_mb_balls_txt[11],
+    	        ]);
+
    my @tablespace_mb_txt = 
           &get_balloon_txt('main', 'do_the_balloons','tablespace_mb', 0);
+
    $balloon->attach($tablespace_mb, 
               -msg => 'Diagrammatic (+ other) reports on tablespaces');
    my @tablespace_mb_balls_txt = 
           &get_balloon_txt('main', 'do_the_balloons','tablespace_mb_balls', 9);
+
    my $tablespace_mb_balls = $tablespace_mb->cget(-menu);
+
    $balloon->attach($tablespace_mb_balls,
       -balloonposition => 'mouse',
       -msg => [ $tablespace_mb_balls_txt[0], $tablespace_mb_balls_txt[1],
                 $tablespace_mb_balls_txt[2], $tablespace_mb_balls_txt[3],
                 $tablespace_mb_balls_txt[4], $tablespace_mb_balls_txt[5],
                 $tablespace_mb_balls_txt[6], $tablespace_mb_balls_txt[7],
-                $tablespace_mb_balls_txt[8], $tablespace_mb_balls_txt[9],
+                $tablespace_mb_balls_txt[8],
    	        ]);
-   my @link_mb_txt = get_balloon_txt('main', 'do_the_balloons','link_mb', 0);
-   $balloon->attach($link_mb, -msg => $link_mb_txt[0]);
-   my @link_mb_balls_txt = 
-          &get_balloon_txt('main', 'do_the_balloons','link_mb_balls', 1);
-   my $link_mb_balls = $link_mb->cget(-menu);
-   $balloon->attach($link_mb_balls,
-   	         -balloonposition => 'mouse',
-   	         -msg => [$link_mb_balls_txt[0],   	     
-   	                  $link_mb_balls_txt[1],   	     
-   	        ]);
+
    my @users_mb_txt = 
           &get_balloon_txt('main', 'do_the_balloons','users_mb', 0);
    $balloon->attach($users_mb, -msg => $users_mb_txt[0]);
@@ -1326,70 +1316,88 @@ sub do_the_balloons {
    	                  $users_mb_balls_txt[8], $users_mb_balls_txt[9],
    	                  $users_mb_balls_txt[10],
    	        ]);
-   my @sql_gen_mb_txt = 
-          &get_balloon_txt('main', 'do_the_balloons','sql_gen_mb', 0);
-   $balloon->attach($sql_gen_mb, -msg => $sql_gen_mb_txt[0]);
-   my @sql_gen_mb_balls_txt = 
-          &get_balloon_txt('main', 'do_the_balloons','sql_gen_mb_balls', 19);
-   my $sql_gen_mb_balls = $sql_gen_mb->cget(-menu);
-   $balloon->attach($sql_gen_mb_balls,
-   	         -balloonposition => 'mouse',
-   	         -msg => [$sql_gen_mb_balls_txt[0], $sql_gen_mb_balls_txt[1],
-   	                  $sql_gen_mb_balls_txt[2], $sql_gen_mb_balls_txt[3],
-   	                  $sql_gen_mb_balls_txt[4], $sql_gen_mb_balls_txt[5],
-   	                  $sql_gen_mb_balls_txt[6], $sql_gen_mb_balls_txt[7],
-   	                  $sql_gen_mb_balls_txt[8], $sql_gen_mb_balls_txt[9],
-   	                  $sql_gen_mb_balls_txt[10], $sql_gen_mb_balls_txt[11],
-   	                  $sql_gen_mb_balls_txt[12], $sql_gen_mb_balls_txt[13],
-   	                  $sql_gen_mb_balls_txt[14], $sql_gen_mb_balls_txt[15],
-   	                  $sql_gen_mb_balls_txt[16], $sql_gen_mb_balls_txt[17],
-   	                  $sql_gen_mb_balls_txt[18], $sql_gen_mb_balls_txt[19],
-   	        ]);
-   my @roll_mb_txt = 
-          &get_balloon_txt('main', 'do_the_balloons','roll_mb', 0);
-   $balloon->attach($roll_mb, -msg => $roll_mb_txt[0]);
-   my @roll_mb_balls_txt = 
-          &get_balloon_txt('main', 'do_the_balloons','roll_mb_balls', 9);
-   my $roll_mb_balls = $roll_mb->cget(-menu);
-   $balloon->attach($roll_mb_balls,
-   	         -balloonposition => 'mouse',
-   	         -msg =>[$roll_mb_balls_txt[0], $roll_mb_balls_txt[1],
-   	                 $roll_mb_balls_txt[2], $roll_mb_balls_txt[3],
-   	                 $roll_mb_balls_txt[4], $roll_mb_balls_txt[5],
-   	                 $roll_mb_balls_txt[6], $roll_mb_balls_txt[7],
-   	                 $roll_mb_balls_txt[8], $roll_mb_balls_txt[9],
-   	        ]);
-            
-   my @procs_mb_txt = 
-          &get_balloon_txt('main', 'do_the_balloons','procs_mb', 0);
-   $balloon->attach($procs_mb, -msg => $procs_mb_txt[0]);
-   my @procs_mb_balls_txt = 
-          &get_balloon_txt('main', 'do_the_balloons','procs_mb_balls', 12);
-   my $procs_mb_balls = $procs_mb->cget(-menu);
-   $balloon->attach($procs_mb_balls,
-   	         -balloonposition => 'mouse',
-   	         -msg => [$procs_mb_balls_txt[0], $procs_mb_balls_txt[1],
-   	                  $procs_mb_balls_txt[2], $procs_mb_balls_txt[3],
-   	                  $procs_mb_balls_txt[4], $procs_mb_balls_txt[5],
-   	                  $procs_mb_balls_txt[6], $procs_mb_balls_txt[7],
-   	                  $procs_mb_balls_txt[8], $procs_mb_balls_txt[9],
-   	                  $procs_mb_balls_txt[10], $procs_mb_balls_txt[11],
-   	                  $procs_mb_balls_txt[12],
-   	        ]);
-   my @unix_help_mb_txt = 
-          &get_balloon_txt('main', 'do_the_balloons','unix_help_mb', 0);
-   $balloon->attach($unix_help_mb, -msg => $unix_help_mb_txt[0]);
-   my @unix_help_mb_balls_txt = 
-          &get_balloon_txt('main', 'do_the_balloons','unix_help_mb_balls', 2);
-   my $unix_help_mb_balls = $unix_help_mb->cget(-menu);
-   $balloon->attach($unix_help_mb_balls,
+     my @sql_gen_mb_txt = 
+            &get_balloon_txt('main', 'do_the_balloons','sql_gen_mb', 0);
+     $balloon->attach($sql_gen_mb, -msg => $sql_gen_mb_txt[0]);
+     my @sql_gen_mb_balls_txt = 
+            &get_balloon_txt('main', 'do_the_balloons','sql_gen_mb_balls', 19);
+     my $sql_gen_mb_balls = $sql_gen_mb->cget(-menu);
+     $balloon->attach($sql_gen_mb_balls,
+     	         -balloonposition => 'mouse',
+     	         -msg => [$sql_gen_mb_balls_txt[0], $sql_gen_mb_balls_txt[1],
+     	                  $sql_gen_mb_balls_txt[2], $sql_gen_mb_balls_txt[3],
+     	                  $sql_gen_mb_balls_txt[4], $sql_gen_mb_balls_txt[5],
+     	                  $sql_gen_mb_balls_txt[6], $sql_gen_mb_balls_txt[7],
+     	                  $sql_gen_mb_balls_txt[8], $sql_gen_mb_balls_txt[9],
+     	                  $sql_gen_mb_balls_txt[10], $sql_gen_mb_balls_txt[11],
+     	                  $sql_gen_mb_balls_txt[12], $sql_gen_mb_balls_txt[13],
+     	                  $sql_gen_mb_balls_txt[14], $sql_gen_mb_balls_txt[15],
+     	                  $sql_gen_mb_balls_txt[16], $sql_gen_mb_balls_txt[17],
+     	                  $sql_gen_mb_balls_txt[18],
+     	        ]);
+     my @roll_mb_txt = 
+            &get_balloon_txt('main', 'do_the_balloons','roll_mb', 0);
+     $balloon->attach($roll_mb, -msg => $roll_mb_txt[0]);
+     my @roll_mb_balls_txt = 
+            &get_balloon_txt('main', 'do_the_balloons','roll_mb_balls', 9);
+     my $roll_mb_balls = $roll_mb->cget(-menu);
+     $balloon->attach($roll_mb_balls,
+     	         -balloonposition => 'mouse',
+     	         -msg =>[$roll_mb_balls_txt[0], $roll_mb_balls_txt[1],
+     	                 $roll_mb_balls_txt[2], $roll_mb_balls_txt[3],
+     	                 $roll_mb_balls_txt[4], $roll_mb_balls_txt[5],
+     	                 $roll_mb_balls_txt[6], $roll_mb_balls_txt[7],
+     	                 $roll_mb_balls_txt[8], $roll_mb_balls_txt[9],
+     	        ]);
+              
+     my @procs_mb_txt = 
+            &get_balloon_txt('main', 'do_the_balloons','procs_mb', 0);
+     $balloon->attach($procs_mb, -msg => $procs_mb_txt[0]);
+  
+     my @procs_mb_balls_txt = 
+            &get_balloon_txt('main', 'do_the_balloons','procs_mb_balls', 14);
+  
+     my $procs_mb_balls = $procs_mb->cget(-menu);
+  
+     $balloon->attach($procs_mb_balls,
+              -balloonposition => 'mouse',
+              -msg => [$procs_mb_balls_txt[0], $procs_mb_balls_txt[1],
+                       $procs_mb_balls_txt[2], $procs_mb_balls_txt[3],
+                       $procs_mb_balls_txt[4], $procs_mb_balls_txt[5],
+                       $procs_mb_balls_txt[6], $procs_mb_balls_txt[7],
+                       $procs_mb_balls_txt[8], $procs_mb_balls_txt[9],
+                       $procs_mb_balls_txt[10],$procs_mb_balls_txt[11],
+                       $procs_mb_balls_txt[12],$procs_mb_balls_txt[13],
+                       $procs_mb_balls_txt[14],
+     	        ]);
+  
+     my @unix_help_mb_txt = 
+            &get_balloon_txt('main', 'do_the_balloons','unix_help_mb', 0);
+  
+     $balloon->attach($unix_help_mb, -msg => $unix_help_mb_txt[0]);
+  
+     my @unix_help_mb_balls_txt = 
+            &get_balloon_txt('main', 'do_the_balloons','unix_help_mb_balls', 2);
+     my $unix_help_mb_balls = $unix_help_mb->cget(-menu);
+     $balloon->attach($unix_help_mb_balls,
    	     -balloonposition => 'mouse',
-   	     -msg => [$unix_help_mb_balls_txt[0], $unix_help_mb_balls_txt[1],
-   	              $unix_help_mb_balls_txt[2],
-   	        ]);
+     	     -msg => [$unix_help_mb_balls_txt[0], $unix_help_mb_balls_txt[1],
+     	              $unix_help_mb_balls_txt[2],
+     	        ]);
 }
+
 sub change_back_col {
-   $v_text->configure(-background => $main::this_is_the_colour);
+
+   eval {
+      $v_text->configure(-background => $main::this_is_the_colour);
+   };
+   if ($@){
+      orac_Utils::log_message(
+        "Some problem changing background to $main::this_is_the_colour");
+      undef $main::this_is_the_colour;
+      return;
+   }
+
    my $comp_str = "";
    if (defined($dbaed_top)){
       $comp_str = $main::dbaed_top->state;
@@ -1413,7 +1421,16 @@ sub change_back_col {
    }
 }
 sub change_fore_col {
-   $v_text->configure(-foreground => $main::this_is_the_forecolour);
+   eval {
+      $v_text->configure(-foreground => $main::this_is_the_forecolour);
+   };
+   if ($@){
+      orac_Utils::log_message(
+        "Some problem changing foreground to $main::this_is_the_forecolour");
+      undef $main::this_is_the_forecolour;
+      return;
+   }
+
    my $comp_str = "";
    if (defined($dbaed_top)){
       $comp_str = $main::dbaed_top->state;

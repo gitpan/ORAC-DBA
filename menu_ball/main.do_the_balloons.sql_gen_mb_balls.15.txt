@@ -1,2 +1,3 @@
-This will find all the invalid objects within your database and generate the SQL necessary to recompile them.  Copy
-this output into SQL*Plus, and save yourself all that typing you normally do to extract data from dba_objects.
+This will find all the invalid objects within your database and generate 
+the SQL necessary to recompile them.  Copy this output into SQL*Plus, and 
+save yourself all that typing you normally do to extract data from dba_objects.

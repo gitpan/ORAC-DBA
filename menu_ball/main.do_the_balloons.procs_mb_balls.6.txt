@@ -1,3 +1,4 @@
-Lists all direct grants made against a specific table, view, or program, segregated by the type of the grant
-recipient.  This report is a complete listing of all methods by which the object may be accessed.  Used to
-research the potential impact of revokes against objects that have multiple access paths that lead to it.
+Lists direct grants made against specific table, view, or program, segregated
+by the type of the grant recipient.  This report a complete listing of all
+methods by which the object may be accessed.  Used to research potential
+impact of revokes against objects having multiple access paths that lead to it.

@@ -1,3 +1,3 @@
-Lists all roles in the database and to whom (user or role) they were granted.  This report is used to walk backwards
-along all access paths in the database to their start points (user names).  Used when researching the levels of
-security indirection in a database.
+Lists roles in the database and to whom (user or role) they were granted.  
+This used to walk backwards along database access paths to start points 
+(user names).  Researches the levels of security indirection in a database.

@@ -1,3 +1,4 @@
-Gives you access to all the SQL used to generate Users, Roles, Grants, Links and Profiles.  This is particularly
-useful if you have to create a new user exactly the same as a current user.  Encrypted passwords can appear with
-some of the outputs in this section, and you should be careful to protect them from straying eyes.
+Gives you access to SQL used to generate Users, Roles, Grants, Links and 
+Profiles.  Useful to create a new user exactly the same as a current one.  
+Encrypted passwords can appear with some of the outputs in this section.
+You should be careful to protect them from straying eyes.

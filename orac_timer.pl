@@ -29,7 +29,6 @@ $top->title($this_title);
 my(@layout_menu_bar) = qw/-side top -padx 5 -expand yes -fill both/;
 $menu_bar = $top->Frame()->pack(@layout_menu_bar);
 $menu_bar->Label(  -text        => 'Task Hours',
-                   -font        => '-adobe-helvetica-bold-r-narrow--18-120-75-75-p-46-*-1',
                    -borderwidth => 2,
                    -relief      => 'flat',
                 )->pack(-side => 'right', -anchor => 'e');

@@ -39,7 +39,7 @@ begin
   into v_dbname, v_now 
   from v$database; 
   dbms_output.put_line('99'||'^'||v_dbname||'^'||v_now); 
-  select 'Memory pigs - Top 5 queries using the largest amount of logical reads' 
+  select 'Memory Hogs - Top 5 queries using the largest amount of logical reads' 
   into v_memory_pigs 
   from dual; 
   dbms_output.put_line('3'||'^'||v_memory_pigs); 
@@ -47,7 +47,7 @@ begin
   into v_memory_pigs 
   from dual; 
   dbms_output.put_line('4'||'^'||v_memory_pigs); 
-  select 'I/O pigs - Top 20 SQL statements performing the most physical disk reads' 
+  select 'I/O Hogs - Top 20 SQL statements performing the most physical disk reads' 
   into v_memory_pigs 
   from dual; 
   dbms_output.put_line('5'||'^'||v_memory_pigs); 

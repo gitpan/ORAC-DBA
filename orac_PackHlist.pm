@@ -35,7 +35,6 @@ sub pack_orac {
    $menu_bar = $top->Frame(width => 100)->pack(@layout_menu_bar);
    $menu_bar->Label(  
       -text        => 'PL/SQL Packages',
-      -font        => '-adobe-helvetica-bold-r-narrow--18-120-75-75-p-46-*-1',
       -borderwidth => 2,
       -relief      => 'flat',
       )->pack(-side => 'right', -anchor => 'e');
@@ -230,7 +229,7 @@ sub do_a_head {
    }
    my $v_bouton = 
          $v_text->Button(
-             -text => "See PL/SQL",
+             -text => "See SQL",
              -command => sub { $dialog->Busy;
                                main::see_sql($v_command);
                                $dialog->Unbusy },
@@ -284,7 +283,7 @@ sub do_a_body {
       $j_counter++;
    }
    my $v_bouton = 
-          $v_text->Button(-text => "See PL/SQL",
+          $v_text->Button(-text => "See SQL",
                           -command => sub { $dialog->Busy;
                                             main::see_sql($v_command);
                                             $dialog->Unbusy },

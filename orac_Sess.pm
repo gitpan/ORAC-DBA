@@ -22,11 +22,25 @@ use Tk;
 use Cwd;
 use DBI;
 use Tk::DialogBox;
+
+sub print_conn {
+   package main;
+   my($Pid,$Spid,$Sid,$Ora,$Unix,$Log,$Last) = @_;
+#234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890
+$^A = "";
+$str = formline <<'END',$Pid,$Spid,$Sid,$Ora,$Unix,$Log,$Last;
+^<<<< ^>>>> ^>>>> ^>>>>>>>>>>>>> ^>>>>>>>>>>>>> ^>>>>>>>>>>>>>>>>>>>> ^>>>>>>>>>>>>>>>>>>> ~~
+END
+print TEXT "$^A";
+}
 sub conn_orac {
    package main;
-   printf TEXT "\nConnections\n\n%5s %5s %5s %10s %10s %20s %20s\n\n", 
-               'PID', 'SPID', 'SID', 'ORA_USER', 'UNIX_USER', 
-               'WHEN_USER_LOGGED_ON', 'WHEN_LAST_ACTIVITY';
+   printf TEXT "Connection Times\n\n";
+
+   orac_Sess::print_conn('Pid', 'Spid', 'Sid', 'Ora User', 'Unix User', 
+                         'When User Logged On', 'When Last Activity');
+   orac_Sess::print_conn('---', '----', '---', '--------', '---------', 
+                         '-------------------', '------------------');
    
    my $v_command = orac_Utils::file_string('sql_files', 'orac_Sess',
                                            'conn_orac', '1','sql');
@@ -35,63 +49,43 @@ sub conn_orac {
    $rv = $sth->execute;
 
    while (@v_this_text = $sth->fetchrow) {
-      printf TEXT "%5s %5s %5s %10s %10s %20s %20s\n", 
-         $v_this_text[0],
-         $v_this_text[1],
-         $v_this_text[2],
-         $v_this_text[3],
-         $v_this_text[4],
-         $v_this_text[5],
-         $v_this_text[6];
-      }
+      orac_Sess::print_conn( @v_this_text );
+   }
    $rc = $sth->finish;
    &see_plsql($v_command);
+}
+sub print_spinns {
+   package main;
+   my($add,$pid,$spd,$user,$ser,$trm,$prg,$bck,$wt,$spn) = @_;
+#234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890
+$^A = "";
+$str = formline <<'END',$add,$pid,$spd,$user,$ser,$trm,$prg,$bck,$wt,$spn;
+^<<<<<<<< ^>>>> ^>>>> ^>>>>>>>>>>> ^>>>>> ^>>>>>>>>>>> ^>>>>>>>>>>>>>>>>>>>>>>>>>>> ^>>> ^>>> ^>>> ~~
+END
+print TEXT "$^A";
 }
 sub spin_orac {
    package main;
 
-   my $first_sth = $dbh->prepare(
-         orac_Utils::file_string('sql_files','orac_Sess','spin_orac','1','sql')
-                                ) || die $dbh->errstr;
-   $rv = $first_sth->execute;
+   printf TEXT "Processes currently on database:\n\n";
 
-   $v_counter = 0;
-   while ($v_this_text = $first_sth->fetchrow) {
-      $v_this_text[$v_counter] = $v_this_text;
-      $v_counter++;
-   }
-   $rc = $first_sth->finish;
-   printf TEXT "\nProcesses\n\n%8s %3s %5s %8s %7s %12s %30s %10s %9s %9s\n\n", 
-      $v_this_text[0],
-      $v_this_text[1],
-      $v_this_text[2],
-      $v_this_text[3],
-      $v_this_text[4],
-      $v_this_text[5],
-      $v_this_text[6],
-      $v_this_text[7],
-      $v_this_text[8],
-      $v_this_text[9];
+   my @titles = ('Addr', 'Pid', 'Spid', 'User Name', 'Serial', 'Term', 
+                 'Prog', 'Back Grnd', 'Ltch Wait', 'Ltch Spin');
+   orac_Sess::print_spinns( @titles );
+   
+   my @titles = ('----', '---', '----', '---------', '------', '----', 
+                 '----', '----', '----', '----');
+   orac_Sess::print_spinns( @titles );
    
    my $v_command =
-         orac_Utils::file_string('sql_files','orac_Sess','spin_orac','2','sql');
+         orac_Utils::file_string('sql_files','orac_Sess','spin_orac','1','sql');
 
    my $sth = $dbh->prepare($v_command) || die $dbh->errstr;
    
    $rv = $sth->execute;
    while (@v_this_text = $sth->fetchrow) {
-      printf TEXT "%8s %3s %5s %8s %7s %12s %30s %10s %9s %9s\n", 
-         $v_this_text[0],
-         $v_this_text[1],
-         $v_this_text[2],
-         $v_this_text[3],
-         $v_this_text[4],
-         $v_this_text[5],
-         $v_this_text[6],
-         $v_this_text[7],
-         $v_this_text[8],
-         $v_this_text[9];
-      }
+      orac_Sess::print_spinns( @v_this_text );
+   }
    $rc = $sth->finish;
    &see_plsql($v_command);
 }

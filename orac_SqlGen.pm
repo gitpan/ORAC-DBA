@@ -25,8 +25,13 @@ use Tk::DialogBox;
 use Tk::HList;
 sub datafile_orac {
    package main;
-   printf TEXT "\nFiles for Database $v_db\n\n%4s %20s %50s %8s %6s\n\n", 
-      'TYPE', 'TABLESPACE', 'FILE_NAME', 'ACT_MB', 'STATUS';
+   printf TEXT "Files for Database $v_db\n\n";
+
+   my @titles = ('TYPE','TABLESPACE','FILE_NAME','ACT_MB','STATUS');
+   orac_SqlGen::print_datafile( @titles );
+
+   my @titles = ('----','----------','---------','------','------');
+   orac_SqlGen::print_datafile( @titles );
    
    my $v_command = orac_Utils::file_string('sql_files', 'orac_SqlGen',
                                            'datafile_orac', '1','sql');
@@ -39,32 +44,49 @@ sub datafile_orac {
       if ($v_this_text[3] eq '0'){
          $v_this_text[3] = '';
       }
-      printf TEXT "%4s %20s %50s %8.2s %6s\n", 
-         $v_this_text[0],
-         $v_this_text[1],
-         $v_this_text[2],
-         $v_this_text[3],
-         $v_this_text[4];
+      else {
+         $v_this_text[3] = sprintf("%.2f", ($v_this_text[3] + 0.00));
+      }
+      orac_SqlGen::print_datafile( @v_this_text );
    }
    $rc = $sth->finish;
    &see_plsql($v_command);
 }
+sub print_datafile {
+   package main;
+
+   my($type,$tablespace,$file_name,$act_mb,$status) = @_;
+
+#234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890
+$^A = "";
+$str = formline <<'END',$type,$tablespace,$file_name,$act_mb,$status;
+^<<< ^<<<<<<<<<<<<<<<<<<< ^<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< ^>>>>>>> ^>>>>> ~~
+END
+print TEXT "$^A";
+
+}
+
 sub ext_orac {
    package main;
 
    my $v_command = orac_Utils::file_string('sql_files', 'orac_SqlGen',
                                            'ext_orac', '1','sql');
 
-   printf TEXT "\nEXTENTS Report for " .
-               "$v_db\n\n%-20s %20s %7s %30s %4s %4s %7s %15s\n\n",
-               'OWNER', 'TABLESPACE', 'TYPE', 
-               'NAME', 'MAX', 'EXTS', '%', 'FIX?';
+   printf TEXT "EXTENTS Report for $v_db\n\n";
+
+   my @titles = ('OWNER','TABSPACE','TYPE','OBJECT_NAME','MAX',
+                 'EXTS','%','FIX?');
+   orac_SqlGen::print_extents( @titles );
+   
+   my @titles = ('-----','--------','----','-----------','---',
+                 '----','-','----');
+   orac_SqlGen::print_extents( @titles );
    
    my $sth = $dbh->prepare( $v_command ) || die $dbh->errstr; 
    $rv = $sth->execute;
    my $detected = 0;
    while (@v_this_text = $sth->fetchrow) {
-      if ($v_this_text[7] eq '*** FIX ME ***'){
+      if ($v_this_text[7] eq '** FIX **'){
          $detected = 1;
       }
       if($v_this_text[4] >= 2147483645){
@@ -74,18 +96,32 @@ sub ext_orac {
       else {
          $pct = sprintf("%6.2f%%", ($v_this_text[6] + 0.00));
       }
-      printf TEXT "%-20s %20s %7s %30s %4s %4s %7s %15s\n",
-         $v_this_text[0],
-         $v_this_text[1],
-         $v_this_text[2],
-         $v_this_text[3],
-         $v_this_text[4],
-         $v_this_text[5],
-         $pct,
-         $v_this_text[7];
+      orac_SqlGen::print_extents(
+                        $v_this_text[0],
+                        $v_this_text[1],
+                        $v_this_text[2],
+                        $v_this_text[3],
+                        $v_this_text[4],
+                        $v_this_text[5],
+                        $pct,
+                        $v_this_text[7]
+                                );
       }
    $rc = $sth->finish;
    &see_plsql($v_command);
+}
+sub print_extents {
+   package main;
+
+   my($owner,$tabspace,$type,$name,$max,$exts,$pct,$fix) = @_;
+
+#234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890
+$^A = "";
+$str = formline <<'END',$owner,$tabspace,$type,$name,$max,$exts,$pct,$fix;
+^<<<<<<<<< ^<<<<<<<<<<<<<<<<<<<<< ^<<<<<<<< ^<<<<<<<<<<<<<<<<<<<<< ^>>> ^>>> ^>>>>>> ^>>>>>>>> ~~
+END
+print TEXT "$^A";
+
 }
 sub alter_comp_orac {
    package main;

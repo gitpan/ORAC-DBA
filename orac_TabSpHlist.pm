@@ -35,7 +35,6 @@ sub tablespace_orac {
    $menu_bar = $top->Frame(width => 100)->pack(@layout_menu_bar);
    $menu_bar->Label(  
       -text        => 'Tablespace Examiner',
-      -font        => '-adobe-helvetica-bold-r-narrow--18-120-75-75-p-46-*-1',
       -borderwidth => 2,
       -relief      => 'flat',
       )->pack(-side => 'right', -anchor => 'e');

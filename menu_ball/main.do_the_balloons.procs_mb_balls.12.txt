@@ -1,3 +1,4 @@
-Lists all direct grants made to a specific role, segregated by the nature of the grant.  This report is a complete
-listing of all initial permissions along all access paths for a role. Used to research the potential impact of
-revoking any direct grant issued to a role.
+Lists direct grants made to specific role, segregated by nature of grant.  
+This report a complete listing of initial permissions along all access paths 
+for a role. Used to research the potential impact of revoking 
+direct grant issued to a role.

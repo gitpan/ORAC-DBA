@@ -76,7 +76,7 @@ sub tune_pigs {
    }
    print TEXT $the_top_title;
    if (($we_have_mempigs == 0) && ($we_have_iopigs == 0)){
-       print TEXT "no pigs found";
+       print TEXT "no memory hoggers found";
    }
    else {
       if ($we_have_mempigs == 1){
@@ -122,9 +122,10 @@ sub tune_pigs {
 sub print_mem_line {
    package main;
    my($buffer_gets, $username, $sid, $sql_text, $dummy) = @_;
+#234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890
 $^A = "";
 $str = formline <<'END',$buffer_gets, $username, $sid, $sql_text;
-^>>>>>>>>>>>> ^<<<<<<<<<<<<<<<<<<<< ^<<<<<< ^<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< ~~
+^>>>>>>>>>>>> ^<<<<<<<<<<<<<<<<<<<< ^<<<<<< ^<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< ~~
 END
 print TEXT "$^A";
       
@@ -133,9 +134,10 @@ sub print_io_line {
    package main;
    my($disk_reads, $execs, $read_exec, 
       $username, $sid, $sql_text, $dummy) = @_;
+#234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890
 $^A = "";
 $str = formline <<'END',$disk_reads,$execs,$read_exec,$username,$sid,$sql_text;
-^>>>>>>>>> ^<<<<<<< ^<<<<<<<< ^<<<<<<<<<<< ^<<<<< ^<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< ~~
+^>>>>>>>>> ^<<<<<<< ^<<<<<<<< ^<<<<<<<<<<< ^<<<<< ^<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< ~~
 END
 print TEXT "$^A";
 }

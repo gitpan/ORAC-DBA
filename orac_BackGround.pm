@@ -90,24 +90,12 @@ sub dbwr_fileio {
 
    my $canvas_frame = $dialog->Frame;
    $canvas_frame->pack(-expand => '1', -fill => 'both');
-   my $canvas = $canvas_frame->Canvas(-background => $main::this_is_the_colour,
+
+   my $canvas = $canvas_frame->Scrolled('Canvas',
                                       -relief => 'sunken', 
-                                      -bd => 2, 
-                                      -width => 920, 
-                                      -height => 550);
-
-   my $vscroll = $canvas_frame->Scrollbar(-command => ['yview', $canvas]);
-   my $hscroll = $canvas_frame->Scrollbar(-command => ['xview', $canvas],
-                                         -orient => 'horiz');
-
-   $canvas->configure(-xscrollcommand => ['set', $hscroll],
-                     -yscrollcommand => ['set', $vscroll]);
-   $vscroll->pack(-side => 'right', -fill => 'y');
-   $hscroll->pack(-side => 'bottom', -fill => 'x');
+                                      -background => $main::this_is_the_colour,
+                                      -bd => 2, width => 700, height => 500);
    
-   $canvas->pack(-expand => 'yes', -fill => 'both');
-   $canvas->configure(-scrollregion => ['0', '0', '35c', '200c']);
-
    my $v_command = orac_Utils::file_string('sql_files', 'orac_BackGround',
                                            'dbwr_fileio','1','sql');
 
@@ -139,8 +127,23 @@ sub dbwr_fileio {
          $dbwr_fileio[$i][6]);
       }
    }
+   my $c_button = 
+          $canvas->Button(
+                     -text => 'See SQL',
+                     -command => sub { main::banana_see_sql($v_command) } );
+
+   my $y_start = orac_BackGround::this_pak_get_y(($counter + 1));
+   $canvas->create('window', '1c', "$y_start" . 'c', -window => $c_button,
+	           qw/-anchor nw -tags item/);
+   $canvas->configure(-scrollregion => [ $canvas->bbox("all") ]);
+   $canvas->pack(-expand => 'yes', -fill => 'both');
    $dialog->Show();
 }
+sub this_pak_get_y {
+   my $input_y = $_[0];
+   return (($input_y * 2.5) + 0.2);
+}
+
 sub dbwr_print_fileio {
    package main;
    my ($canvas,$max_value,$y_start,
@@ -163,18 +166,14 @@ sub dbwr_print_fileio {
    $text_stuff[4] = "phyblkwrt";
    $text_stuff[5] = "readtim";
    $text_stuff[6] = "writetim";
-   $colour_stuff[1] = "red";
-   $colour_stuff[2] = "orange";
-   $colour_stuff[3] = "yellow";
-   $colour_stuff[4] = "green";
-   $colour_stuff[5] = "blue";
-   $colour_stuff[6] = "violet";
-   $f1 = $canvas->Font(family => 'courier', weight => 'bold', size => 160);
+
    my $screen_ratio = 0.00;
-   $screen_ratio = ($max_value/20.00);
+   $screen_ratio = ($max_value/15.00);
    $text_name_start = 0.1;
+
    $x_start = 2;
-   $y_start = ($y_start * 2.5) + 0.2;
+   $y_start = orac_BackGround::this_pak_get_y($y_start);
+
    $act_figure_pos = $x_start + ($local_max/$screen_ratio) + 0.5;
    my $i;
    
@@ -189,7 +188,7 @@ sub dbwr_print_fileio {
           "$y_start" . 'c', 
           "$x_stop" . 'c', 
           "$y_end" . 'c'),
-          -fill => $colour_stuff[$i]);
+          -fill => $main::this_is_the_forecolour);
 
       $text_y_start = $y_start - 0.15;
 
@@ -197,16 +196,15 @@ sub dbwr_print_fileio {
            'text', 
            "$text_name_start" . 'c', 
            "$text_y_start" . 'c', 
-           -font => $f1, 
            -anchor => 'nw',
            -justify => 'left',
-           -text => "$text_stuff[$i]" , -fill => 'white');
+           -text => "$text_stuff[$i]" , 
+           -fill => $main::this_is_the_forecolour);
 
       $canvas->create(
             'text', 
             "$act_figure_pos" . 'c', 
             "$text_y_start" . 'c', 
-            -font => $f1, 
             -anchor => 'nw',
             -justify => 'left',
             -text => "$stuff[$i]" , -fill => $main::this_is_the_forecolour);
@@ -219,10 +217,10 @@ sub dbwr_print_fileio {
       'text', 
       "$x_start" . 'c', 
       "$text_y_start" . 'c', 
-      -font => $f1, 
       -anchor => 'nw',
       -justify => 'left',
-      -text => "$name" , -fill => 'white');
+      -text => "$name" , 
+      -fill => $main::this_is_the_forecolour);
 }
 
 sub dbwr_lru_latch {
@@ -243,16 +241,9 @@ sub dbwr_lru_latch {
    while (@v_this_text = $sth->fetchrow) {
       my $the_end = '';
       if($v_this_text[0] =~ /^cache buffers lru chain$/){
-         $the_end = '(*LRU latches*)';
+         $v_this_text[6] = '(*LRU latches*)';
       }
-      orac_BackGround::dbwr_print_latch(
-         $v_this_text[0],
-         $v_this_text[1],
-         $v_this_text[2],
-         $v_this_text[3],
-         $v_this_text[4],
-         $v_this_text[5],
-         $the_end);
+      orac_BackGround::dbwr_print_latch( @v_this_text );
    }
    $rc = $sth->finish;
    main::see_plsql($v_command);
@@ -260,9 +251,10 @@ sub dbwr_lru_latch {
 sub dbwr_print_latch {
    package main;
    ($name, $gets, $misses, $sleeps, $imgets, $immisses, $the_end) = @_;
+#234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890
 $^A = "";
 $str = formline <<'THISEND',$name,$gets,$misses,$sleeps,$imgets,$immisses,$the_end;
-^>>>>>>>>>>>>>>>>>>>>>> ^>>>>>>>>>> ^>>>>>>>>>> ^>>>>>>>>>> ^>>>>>>>>>> ^>>>>>>>>>>  ^<<<<<<<<<<<<<< ~~
+^>>>>>>>>>>>>>>>>>>>>>> ^>>>>>>>>>> ^>>>>>>>>>> ^>>>>>>>>>> ^>>>>>>>>>> ^>>>>>>>>>  ^<<<<<<<<<<<<<< ~~
 THISEND
 print TEXT "$^A";
       

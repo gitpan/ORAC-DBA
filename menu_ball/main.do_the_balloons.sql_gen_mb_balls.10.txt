@@ -1,1 +1,2 @@
-Access to both Snapshot SQL on this database, and Snapshot Log SQL for snapshots set up on other databases.
+Access to both Snapshot SQL on this database, and Snapshot Log SQL for 
+snapshots set up on other databases.

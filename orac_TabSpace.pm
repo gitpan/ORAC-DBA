@@ -37,8 +37,6 @@ sub tabspace_diag {
                             -background => $main::this_is_the_colour,
                             -bd => 2, width => 700, height => 500);
    
-   $f1 = $canvas->Font(family => 'courier', weight => 'bold', size => 160);
-
    my $v_command = orac_Utils::file_string('sql_files', 'orac_TabSpace',
                                            'tabspace_diag','1','sql');
 
@@ -65,7 +63,7 @@ sub tabspace_diag {
 
       my @v_sizes = $sec_sth->fetchrow;
       $sec_rc = $sec_sth->finish;
-      orac_TabSpace::add_item($f1, $canvas, $v_counter, 
+      orac_TabSpace::add_item($canvas, $v_counter, 
                               $v_this_text[0], $v_this_text[5], 
                               $v_sizes[0], $v_sizes[1], $v_sizes[2]);
       $v_counter++;
@@ -80,6 +78,7 @@ sub tabspace_diag {
    my $y_start = orac_TabSpace::work_out_why($v_counter);
    $canvas->create('window', '1c', "$y_start" . 'c', -window => $c_button,
 	           qw/-anchor nw -tags item/);
+   $canvas->configure(-scrollregion => [ $canvas->bbox("all") ]);
    $canvas->pack(-expand => 'yes', -fill => 'both');
    $dialog->Show();
 }
@@ -89,24 +88,24 @@ sub work_out_why {
 }
 sub add_item
 {
-    my ($this_font, $c, $y, $t, $pct, $bytes, $used, $free) = @_;
+    my ($c, $y, $t, $pct, $bytes, $used, $free) = @_;
     my $thickness = 0.4;
     my $y_start = orac_TabSpace::work_out_why($y);
     my $y_end = $y_start + 0.4;
     my $fill = (100/10.0) + 0.4;
     $c->create(('rectangle', "$fill" . 'c',    
                 "$y_start". 'c', '0.4c', "$y_end" . 'c'),
-               -fill => 'SkyBlue2');
+               -fill => $main::this_is_the_colour);
 
     my $fill = ($pct/10.0) + 0.4;
     $c->create(('rectangle', "$fill" . 'c', 
                 "$y_start". 'c',   '0.4c',      "$y_end" . 'c'),
-               -fill => 'Red');
+               -fill => $main::this_is_the_forecolour);
   
     $y_start = $y_start - 0.4;
     $c->create(
             'text', '0.4c', 
-            "$y_start" . 'c', -font => $this_font, -anchor => 'nw',
+            "$y_start" . 'c', -anchor => 'nw',
             -fill => $main::this_is_the_forecolour,
             -justify => 'left',
             -text => 'Tablespace ' . "$t" . ' is '. 
@@ -114,7 +113,7 @@ sub add_item
 
     $y_start = $y_start + 0.4;
     $c->create('text', '10.4c', "$y_start" . 'c', 
-               -font => $this_font, -anchor => 'nw',
+               -anchor => 'nw',
                -fill => $main::this_is_the_forecolour,
                -justify => 'left',
                -text => sprintf("%8s Total %8s Used %8s Free", 

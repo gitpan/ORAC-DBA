@@ -29,21 +29,11 @@ sub tune_health {
                                  -buttons => [ "Dismiss" ]);
    my $canvas_frame = $dialog->Frame;
    $canvas_frame->pack(-expand => '1', -fill => 'both');
-   my $canvas = $canvas_frame->Canvas(-background => $main::this_is_the_colour,
+
+   my $canvas = $canvas_frame->Scrolled('Canvas',
                                       -relief => 'sunken', 
-                                      -bd => 2, 
-                                      -width => 920, 
-                                      -height => 550);
-   my $vscroll = $canvas_frame->Scrollbar(-command => ['yview', $canvas]);
-   my $hscroll = $canvas_frame->Scrollbar(-command => ['xview', $canvas],
-                                         -orient => 'horiz');
-   $canvas->configure(-xscrollcommand => ['set', $hscroll],
-                     -yscrollcommand => ['set', $vscroll]);
-   $vscroll->pack(-side => 'right', -fill => 'y');
-   $hscroll->pack(-side => 'bottom', -fill => 'x');
-   
-   $canvas->pack(-expand => 'yes', -fill => 'both');
-   $canvas->configure(-scrollregion => ['0', '0', '35c', '200c']);
+                                      -background => $main::this_is_the_colour,
+                                      -bd => 2, width => 700, height => 500);
 
    my $v_command = 
           orac_Utils::file_string('sql_files', 'orac_TuneHealth',
@@ -109,6 +99,16 @@ sub tune_health {
    $rc = $fifth_sth->finish;
    orac_TuneHealth::add_item( $canvas, $dc_hit_ratio, $lc_hit_ratio, 
                               $hit_ratio, $ratio, $w2wait_ratio);
+   #my $c_button = 
+   #       $canvas->Button(
+   #                  -text => 'See SQL',
+   #                  -command => sub { main::banana_see_sql($v_command) } );
+#
+#   my $y_start = orac_TabDet::work_out_why($v_counter);
+#   $canvas->create('window', '1c', "$y_start" . 'c', -window => $c_button,
+#	           qw/-anchor nw -tags item/);
+   $canvas->configure(-scrollregion => [ $canvas->bbox("all") ]);
+   $canvas->pack(-expand => 'yes', -fill => 'both');
    $dialog->Show();
 }
 sub add_item
@@ -117,7 +117,6 @@ sub add_item
    my ( $canvas, $dc_hit_ratio, $lc_hit_ratio, $hit_ratio, 
         $ratio, $w2wait_ratio) = @_;
 
-   $f1 = $canvas->Font(family => 'courier', weight => 'bold', size => 160);
    my $y_start = 1.0;
    my $y_end = $y_start + 0.3;
    $small_division = 20.00;
@@ -127,7 +126,7 @@ sub add_item
    } else {
       $division = $small_division;
    }
-   $screen_ratio = 5;
+   $screen_ratio = 6;
    $rec_width = 0.12;
    $low_accept = 10.00;
    $high_accept = 15.00;
@@ -141,20 +140,18 @@ sub add_item
          $canvas->create((
            'rectangle', "$x_start" . 'c', 
            sprintf("%fc", ($y_start - 0.2)), "$x_stop" . 'c', 
-                   sprintf("%fc", ($y_end + 0.2))),
-           -fill => 'yellow');
+                   sprintf("%fc", ($y_end + 0.2))));
       }
       $canvas->create(('rectangle', "$x_start" . 'c', "$y_start" . 'c', 
-                       "$x_stop" . 'c', "$y_end" . 'c'),
-                       -fill => 'green');
+                       "$x_stop" . 'c', "$y_end" . 'c'));
       if((($dc_hit_ratio * 100) /$division) > $i_counter){
          $canvas->create(('rectangle', "$x_start" . 'c', 
                           "$y_start" . 'c', "$x_stop" . 'c', "$y_end" . 'c'),
-                          -fill => 'red');
+                          -fill => $main::this_is_the_forecolour);
       }
    }
    $canvas->create('text', "$x_start" . 'c', 
-                   "$y_start" . 'c', -font => $f1, -anchor => 'nw',
+                   "$y_start" . 'c', -anchor => 'nw',
                     -justify => 'left',
                     -text => sprintf("%8.2f", $division) . '%', 
                     -fill => $main::this_is_the_forecolour);
@@ -164,10 +161,10 @@ sub add_item
    $the_ratio =~ s/[0]*$//g;
    $the_ratio =~ s/\.$/\.0/g;
    $canvas->create('text', '0.8c', "$y_start" . 'c', 
-                   -font => $f1, -anchor => 'nw',
+                   -anchor => 'nw',
                    -justify => 'left',
-                   -text => 'dc_hit_ratio = ' . "$the_ratio" . ' %', 
-                   -fill => 'blue');
+                   -text => 'dc_hit_ratio = ' . "$the_ratio" . ' %',
+                   );
 
    if ($dc_hit_ratio < $low_accept) {
       $this_text =
@@ -194,7 +191,7 @@ sub add_item
    }
    $y_start = $y_start + 0.5;
    $canvas->create('text', '0.8c', "$y_start" . 'c', 
-                   -font => $f1, -anchor => 'nw',
+                   -anchor => 'nw',
                    -justify => 'left',
                    -text => $this_text, -fill => $main::this_is_the_forecolour);
    $y_start = $y_start + 2;
@@ -216,21 +213,19 @@ sub add_item
          $canvas->create((
            'rectangle', "$x_start" . 'c', 
            sprintf("%fc", ($y_start - 0.2)), "$x_stop" . 'c', 
-                   sprintf("%fc", ($y_end + 0.2))),
-           -fill => 'yellow');
+                   sprintf("%fc", ($y_end + 0.2))));
       }
       $canvas->create(('rectangle', "$x_start" . 'c', 
-                       "$y_start" . 'c', "$x_stop" . 'c', "$y_end" . 'c'),
-                       -fill => 'green');
+                       "$y_start" . 'c', "$x_stop" . 'c', "$y_end" . 'c'));
 
       if((($lc_hit_ratio * 100) /$division) > $i_counter){
          $canvas->create(('rectangle', "$x_start" . 'c', 
                           "$y_start" . 'c', "$x_stop" . 'c', "$y_end" . 'c'),
-                          -fill => 'red');
+                          -fill => $main::this_is_the_forecolour);
       }
    }
    $canvas->create( 'text', "$x_start" . 'c', 
-                    "$y_start" . 'c', -font => $f1, -anchor => 'nw',
+                    "$y_start" . 'c', -anchor => 'nw',
                     -justify => 'left',
                     -text => sprintf("%8.2f%%", $division), 
                     -fill => $main::this_is_the_forecolour);
@@ -240,10 +235,10 @@ sub add_item
    $the_ratio =~ s/[0]*$//g;
    $the_ratio =~ s/\.$/\.0/g;
    $canvas->create('text', '0.8c', "$y_start" . 'c', 
-                   -font => $f1, -anchor => 'nw',
+                   -anchor => 'nw',
                    -justify => 'left',
                    -text => 'lc_hit_ratio = ' . "$the_ratio" . ' %', 
-                   -fill => 'blue');
+                   );
 
    if ($lc_hit_ratio <= $accept) {
       $this_text =
@@ -260,7 +255,7 @@ sub add_item
    }
    $y_start = $y_start + 0.5;
    $canvas->create('text', '0.8c', "$y_start" . 'c', 
-                   -font => $f1, -anchor => 'nw',
+                   -anchor => 'nw',
                    -justify => 'left',
                    -text => $this_text, 
                    -fill => $main::this_is_the_forecolour);
@@ -285,20 +280,18 @@ sub add_item
          $canvas->create((
            'rectangle', "$x_start" . 'c', 
            sprintf("%fc", ($y_start - 0.2)), "$x_stop" . 'c', 
-                   sprintf("%fc", ($y_end + 0.2))),
-           -fill => 'yellow');
+                   sprintf("%fc", ($y_end + 0.2))));
       }
       $canvas->create(('rectangle', "$x_start" . 'c', 
-                       "$y_start" . 'c', "$x_stop" . 'c', "$y_end" . 'c'),
-                       -fill => 'green');
+                       "$y_start" . 'c', "$x_stop" . 'c', "$y_end" . 'c'));
       if((($hit_ratio * 100) /$division) > $i_counter){
          $canvas->create(('rectangle', "$x_start" . 'c', 
                           "$y_start" . 'c', "$x_stop" . 'c', "$y_end" . 'c'),
-                          -fill => 'red');
+                          -fill => $main::this_is_the_forecolour);
       }
    }
    $canvas->create('text', "$x_start" . 'c', 
-                   "$y_start" . 'c', -font => $f1, -anchor => 'nw',
+                   "$y_start" . 'c', -anchor => 'nw',
                    -justify => 'left',
                    -text => sprintf("%8.2f%%", $division), 
                    -fill => $main::this_is_the_forecolour);
@@ -307,16 +300,16 @@ sub add_item
    $the_ratio =~ s/[0]*$//g;
    $the_ratio =~ s/\.$/\.0/g;
    $canvas->create('text', '0.8c', "$y_start" . 'c', 
-                   -font => $f1, -anchor => 'nw',
+                   -anchor => 'nw',
                    -justify => 'left',
                    -text => 'hit_ratio = ' . "$the_ratio" . ' %', 
-                   -fill => 'blue');
+                   );
    if ($hit_ratio < $low_accept){
       $this_text =
          'Your Buffer Cache Hit Ratio is beneath the accepted ' . 
          'range of 5-30%.  Current size is optimal, but you may ' .
-         'wish to consider ' . "\n" . 
-         'removing buffers if memory is required elsewhere.';
+         'wish to ' . "\n" . 
+         'consider removing buffers if memory is required elsewhere.';
    }
    elsif ($hit_ratio <= $high_accept){
       $this_text =
@@ -331,7 +324,7 @@ sub add_item
    }
    $y_start = $y_start + 0.5;
    $canvas->create('text', '0.8c', "$y_start" . 'c', 
-                   -font => $f1, -anchor => 'nw',
+                   -anchor => 'nw',
                    -justify => 'left',
                    -text => $this_text, -fill => $main::this_is_the_forecolour);
    $y_start = $y_start + 2;
@@ -353,20 +346,18 @@ sub add_item
          $canvas->create((
            'rectangle', "$x_start" . 'c', 
            sprintf("%fc", ($y_start - 0.2)), "$x_stop" . 'c', 
-                   sprintf("%fc", ($y_end + 0.2))),
-           -fill => 'yellow');
+                   sprintf("%fc", ($y_end + 0.2))));
       }
       $canvas->create(('rectangle', "$x_start" . 'c', 
-                       "$y_start" . 'c', "$x_stop" . 'c', "$y_end" . 'c'),
-                       -fill => 'green');
+                       "$y_start" . 'c', "$x_stop" . 'c', "$y_end" . 'c'));
       if((($w2wait_ratio * 100) /$division) > $i_counter){
          $canvas->create(('rectangle', "$x_start" . 'c', 
                           "$y_start" . 'c', "$x_stop" . 'c', "$y_end" . 'c'),
-                          -fill => 'red');
+                          -fill => $main::this_is_the_forecolour);
       }
    }
    $canvas->create('text', "$x_start" . 'c', 
-                   "$y_start" . 'c', -font => $f1, -anchor => 'nw',
+                   "$y_start" . 'c', -anchor => 'nw',
                     -justify => 'left',
                     -text => sprintf("%8.2f%%", $division), 
                     -fill => $main::this_is_the_forecolour);
@@ -375,10 +366,10 @@ sub add_item
    $the_ratio =~ s/[0]*$//g;
    $the_ratio =~ s/\.$/\.0/g;
    $canvas->create('text', '0.8c', "$y_start" . 'c', 
-                   -font => $f1, -anchor => 'nw',
+                   -anchor => 'nw',
                    -justify => 'left',
                    -text => 'w2wait_ratio = ' . "$the_ratio" . ' %', 
-                   -fill => 'blue');
+                   );
    if ($w2wait_ratio <= $accept) {
       $this_text =
          'Your main \'Willing to Wait Ratio\' on v$latch, ' .
@@ -393,7 +384,7 @@ sub add_item
    }
    $y_start = $y_start + 0.5;
    $canvas->create('text', '0.8c', "$y_start" . 'c', 
-                   -font => $f1, -anchor => 'nw',
+                   -anchor => 'nw',
                    -justify => 'left',
                    -text => $this_text, -fill => $main::this_is_the_forecolour);
    $y_start = $y_start + 2;
@@ -415,20 +406,18 @@ sub add_item
          $canvas->create((
            'rectangle', "$x_start" . 'c', 
            sprintf("%fc", ($y_start - 0.2)), "$x_stop" . 'c', 
-           sprintf("%fc", ($y_end + 0.2))),
-           -fill => 'yellow');
+           sprintf("%fc", ($y_end + 0.2))));
       }
       $canvas->create(('rectangle', "$x_start" . 'c', "$y_start" . 'c', 
-                       "$x_stop" . 'c', "$y_end" . 'c'),
-                       -fill => 'green');
+                       "$x_stop" . 'c', "$y_end" . 'c'));
       if((($ratio * 100) /$division) > $i_counter){
          $canvas->create(('rectangle', "$x_start" . 'c', 
                           "$y_start" . 'c', "$x_stop" . 'c', "$y_end" . 'c'),
-                          -fill => 'red');
+                          -fill => $main::this_is_the_forecolour);
       }
    }
    $canvas->create('text', "$x_start" . 'c', 
-                   "$y_start" . 'c', -font => $f1, -anchor => 'nw',
+                   "$y_start" . 'c', -anchor => 'nw',
                     -justify => 'left',
                     -text => sprintf("%8.2f%%", $division), 
                     -fill => $main::this_is_the_forecolour);
@@ -437,9 +426,9 @@ sub add_item
    $the_ratio =~ s/[0]*$//g;
    $the_ratio =~ s/\.$/\.0/g;
    $canvas->create('text', '0.8c', "$y_start" . 'c', 
-                   -font => $f1, -anchor => 'nw',
+                   -anchor => 'nw',
                    -justify => 'left',
-                   -text => 'ratio = ' . "$the_ratio" . ' %', -fill => 'blue');
+                   -text => 'ratio = ' . "$the_ratio" . ' %');
    if ($ratio <= $accept) {
       $this_text =
          'Your main Rollback Ratio on v$rollstat ' .
@@ -454,7 +443,7 @@ sub add_item
    }
    $y_start = $y_start + 0.5;
    $canvas->create('text', '0.8c', "$y_start" . 'c', 
-                   -font => $f1, -anchor => 'nw',
+                   -anchor => 'nw',
                    -justify => 'left',
                    -text => $this_text, -fill => $main::this_is_the_forecolour);
 }

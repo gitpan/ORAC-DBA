@@ -1,2 +1,3 @@
-This creates a short diagrammatic report of all free space by tablespace.  For each one, the report prints the total
-bytes, bytes used, free bytes and provides a graphical representation of the percentages.  
+This creates a short diagrammatic report of all free space by tablespace.  
+For each one, the report prints the total bytes, bytes used, free bytes and 
+provides a graphical representation of the percentages.  

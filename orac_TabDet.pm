@@ -31,21 +31,11 @@ sub tab_det_orac {
 
    my $canvas_frame = $dialog->Frame;
    $canvas_frame->pack(-expand => '1', -fill => 'both');
-   my $canvas = $canvas_frame->Canvas(-relief => 'sunken', 
+   my $canvas = $canvas_frame->Scrolled('Canvas',
+                                      -relief => 'sunken', 
                                       -background => $main::this_is_the_colour,
-                                      -bd => 2, width => 750, height => 600);
-   $f1 = $canvas->Font(family => 'courier', weight => 'bold', size => 160);
+                                      -bd => 2, width => 700, height => 500);
    
-   my $vscroll = $canvas_frame->Scrollbar(-command => ['yview', $canvas]);
-   my $hscroll = $canvas_frame->Scrollbar(-command => ['xview', $canvas],
-                                         -orient => 'horiz');
-   $canvas->configure(-xscrollcommand => ['set', $hscroll],
-                     -yscrollcommand => ['set', $vscroll]);
-   $vscroll->pack(-side => 'right', -fill => 'y');
-   $hscroll->pack(-side => 'bottom', -fill => 'x');
-   
-   $canvas->pack(-expand => 'yes', -fill => 'both');
-   $canvas->configure(-scrollregion => ['0', '0', '20c', '200c']);
    $orac_TabDet::keep_tablespace = 'XXXXXXXXXXXXXXXXX';
 
    my $v_command = 
@@ -73,7 +63,7 @@ sub tab_det_orac {
      $Grand_Total = $Grand_Total + $Total;
      $Grand_Used_Mg = $Grand_Used_Mg + $Used_Mg;
      $Grand_Free_Mg = $Grand_Free_Mg + $Free_Mg;
-     orac_TabDet::add_item( $f1, $canvas, $v_counter,
+     orac_TabDet::add_item( $canvas, $v_counter,
                $T_Space, $Fname, $Total, $Used_Mg, $Free_Mg, $Use_Pct);
      $v_counter++;
    }
@@ -82,7 +72,6 @@ sub tab_det_orac {
    $Grand_Use_Pct = (($Grand_Used_Mg/$Grand_Total)*100.00);
 
    orac_TabDet::add_item( 
-       $f1, 
        $canvas, 
        0,
        '', 
@@ -92,21 +81,32 @@ sub tab_det_orac {
        $Grand_Free_Mg, 
        $Grand_Use_Pct);
 
+   my $c_button = 
+          $canvas->Button(
+                     -text => 'See SQL',
+                     -command => sub { main::banana_see_sql($v_command) } );
+
+   my $y_start = orac_TabDet::work_out_why($v_counter);
+   $canvas->create('window', '1c', "$y_start" . 'c', -window => $c_button,
+	           qw/-anchor nw -tags item/);
+   $canvas->configure(-scrollregion => [ $canvas->bbox("all") ]);
+   $canvas->pack(-expand => 'yes', -fill => 'both');
    $dialog->Show();
+}
+sub work_out_why {
+    my $y_entry = $_[0];
+    return (0.8 + (1.2 * $y_entry));
 }
 sub add_item
 {
-   my (   $font, $canvas, $counter, 
+   my (   $canvas, $counter, 
           $T_Space, $Fname, $Total, $Used_Mg, $Free_Mg, $Use_Pct) = @_;
 
-   my $back_colour = 'SkyBlue2';
-   my $front_colour = 'Red';
+   my $back_colour = $main::this_is_the_colour;
+   my $front_colour = $main::this_is_the_forecolour;
    my $we_draw_a_line = 0;
-   if($counter == 0){
-      $back_colour = 'Yellow';
-      $front_colour = 'Green';
-   }
-   else {
+
+   unless($counter == 0){
       $tablespace_string;
       if ($orac_TabDet::keep_tablespace eq $T_Space){
          $tablespace_string = sprintf("%${old_length}s ", '');
@@ -118,8 +118,9 @@ sub add_item
       }
       $orac_TabDet::keep_tablespace = $T_Space;
    }
+
    my $thickness = 0.4;
-   my $y_start = (0.8 + (1.2 * $counter));
+   my $y_start = orac_TabDet::work_out_why($counter);
    my $y_end = $y_start + 0.4;
    my $fill = (100/10.0) + 0.4;
    $canvas->create(('rectangle', "$fill" . 'c',    
@@ -145,13 +146,13 @@ sub add_item
                    sprintf("%5.2f", $Use_Pct) . '%';
    }
    $canvas->create('text', '0.4c', "$y_start" . 'c', 
-          -font => $font, -anchor => 'nw',
+          -anchor => 'nw',
           -fill => $main::this_is_the_forecolour,
           -justify => 'left',
           -text => $this_text);
    $y_start = $y_start + 0.4;
    $canvas->create('text', '10.4c', "$y_start" . 'c', 
-          -font => $font, -anchor => 'nw',
+          -anchor => 'nw',
           -fill => $main::this_is_the_forecolour,
           -justify => 'left',
           -text => sprintf("%10.2fM Total %10.2fM Used %10.2fM Free", 
@@ -160,7 +161,8 @@ sub add_item
    if ($we_draw_a_line == 1){
       my $line_y_start = $y_start - 0.5;
       $canvas->create(('line', '0.4c', "$line_y_start" . 'c', '20.5c', 
-                       "$line_y_start" . 'c'), -fill => 'white');
+                       "$line_y_start" . 'c'), 
+                       -fill => $main::this_is_the_forecolour);
    }
 }
 1;

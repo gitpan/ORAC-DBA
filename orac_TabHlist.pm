@@ -36,7 +36,6 @@ sub tables_orac {
    $menu_bar = $top->Frame(width => 100)->pack(@layout_menu_bar);
    $menu_bar->Label(  
        -text        => 'Tables',
-       -font        => '-adobe-helvetica-bold-r-narrow--18-120-75-75-p-46-*-1',
        -borderwidth => 2,
        -relief      => 'flat',
        )->pack(-side => 'right', -anchor => 'e');
@@ -389,7 +388,7 @@ sub do_a_table {
    print TEXT "$full_list\n";
 
    my $v_bouton = $v_text->Button(
-                      -text => "See PL/SQL",
+                      -text => "See SQL",
                       -command => sub { $dialog->Busy;
                                         main::see_sql($v_command);
                                         $dialog->Unbusy },
@@ -444,7 +443,7 @@ sub do_an_index {
    }
    my $v_bouton = 
           $v_text->Button(
-                  -text => "See PL/SQL",
+                  -text => "See SQL",
                   -command => sub { $dialog->Busy;
                                     main::see_sql($v_command);
                                     $dialog->Unbusy },
@@ -498,7 +497,7 @@ sub do_a_constr {
    }
    my $v_bouton = 
        $v_text->Button(
-            -text => "See PL/SQL",
+            -text => "See SQL",
             -command => sub { $dialog->Busy;
                               main::see_sql($v_command);
                               $dialog->Unbusy },
@@ -551,7 +550,7 @@ sub do_a_trigger {
    }
    my $v_bouton = 
           $v_text->Button(
-               -text => "See PL/SQL",
+               -text => "See SQL",
                -command => sub { $dialog->Busy;
                                  main::see_sql($v_command);
                                  $dialog->Unbusy },
@@ -605,7 +604,7 @@ sub do_comments {
    }
    my $v_bouton = 
          $v_text->Button(
-                -text => "See PL/SQL",
+                -text => "See SQL",
                 -command => sub { $dialog->Busy;
                                   main::see_sql($v_command);
                                   $dialog->Unbusy },
@@ -719,7 +718,6 @@ sub do_index_build {
                                     -buttons => [ "Build Index","Dismiss" ]);
       my $label = $build_dialog->Label( 
           text   => "Select $ind_owner.$ind_table Columns & then Build Index",
-          font   => '-adobe-helvetica-bold-r-narrow--14-120-75-75-p-46-*-1',
           anchor => 'n',
           height => 1);
 
@@ -739,20 +737,16 @@ sub do_index_build {
       my(@pl) = qw/-side left -pady 2 -anchor w/;
       $tiler->Manage( $tiler->Label(
                -text     => 'Select',
-               -font => '-adobe-helvetica-bold-r-normal--10-80-75-75-p-46-*-1',
                -relief   => 'groove')->pack(@pl));
 
       $tiler->Manage( $tiler->Label(
                 -text     => 'Column',
-                -font => '-adobe-helvetica-bold-r-normal--10-80-75-75-p-46-*-1',
                 -relief   => 'groove')->pack(@pl));
       $tiler->Manage( $tiler->Label(
                 -text     => 'Datatype',
-                -font => '-adobe-helvetica-bold-r-normal--10-80-75-75-p-46-*-1',
                 -relief   => 'groove')->pack(@pl));
       $tiler->Manage( $tiler->Label(
                 -text     => 'Nullable',
-                -font => '-adobe-helvetica-bold-r-normal--10-80-75-75-p-46-*-1',
 	        -relief   => 'groove')->pack(@pl));
       @ind_use_cols;
       @ind_actual_cols;
@@ -766,15 +760,12 @@ sub do_index_build {
 	          -relief   => 'flat')->pack(@pl));
          $tiler->Manage( $tiler->Label(
               -text     => $v_this_text[0],
-              -font => '-adobe-helvetica-bold-r-normal--10-80-75-75-p-46-*-1',
 	      -relief   => 'flat')->pack(@pl));
          $tiler->Manage( $tiler->Label(
               -text     => $v_this_text[1],
-              -font => '-adobe-helvetica-bold-r-normal--10-80-75-75-p-46-*-1',
 	      -relief   => 'flat')->pack(@pl));
          $tiler->Manage( $tiler->Label(
               -text     => $v_this_text[2],
-              -font => '-adobe-helvetica-bold-r-normal--10-80-75-75-p-46-*-1',
 	      -relief   => 'flat')->pack(@pl));
          $ind_actual_cols[$ind_build_count] = "$v_this_text[0]";
          $ind_build_count++;
@@ -831,7 +822,7 @@ sub really_build_index {
 
    for my $column (1..$total_ind_count){
       
-      # Ooer Mrs, a bit of PL/SQL
+      # Ooer Mrs, a bit of SQL
 
       my $bit_string = 
          " v_this_build($column) := " .
@@ -1055,7 +1046,6 @@ sub really_build_index {
           my $v_bouton = 
               $v_text->Button(
            -text => "SQL calculating Average Index Entry Size",
-           -font => '-adobe-helvetica-medium-r-normal--10-80-75-75-p-46-*-1',
            -command => sub { $top->Busy;
                              main::see_sql($v_command);
                              $top->Unbusy },
@@ -1103,7 +1093,6 @@ sub now_build_index_ord {
           $bot_dialog->Label( 
               text   => "Please Insert Index Name, Tablespace, " .
                         "Index Order and then Build Index",
-              font   => '-adobe-helvetica-bold-r-narrow--14-120-75-75-p-46-*-1',
               anchor => 'n',
               height => 1);
       $label->pack(-side => 'top');
@@ -1149,13 +1138,11 @@ sub now_build_index_ord {
          if ($i <= $total_ind_count){
             $tiler->Manage( $tiler->Label(
                -text     => "Pos $i",
-               -font => '-adobe-helvetica-bold-r-normal--10-80-75-75-p-46-*-1',
                -relief   => 'groove')->pack(@pl));
          }
          else {
             $tiler->Manage( $tiler->Label(
                -text     => "Col",
-               -font => '-adobe-helvetica-bold-r-normal--10-80-75-75-p-46-*-1',
                -relief   => 'groove')->pack(@pl));
          }
       }
@@ -1174,7 +1161,6 @@ sub now_build_index_ord {
             else {
                $tiler->Manage( $tiler->Label(
                 -text => $total_ind_array[$jesus_row],
-                -font => '-adobe-helvetica-bold-r-normal--10-80-75-75-p-46-*-1',
                 -justify  => 'left',
                 -relief   => 'flat')->pack(@pl));
             }
@@ -1365,7 +1351,7 @@ sub do_analysis {
    }
    my $v_bouton = 
         $v_text->Button(
-            -text => "See SQL & PL/SQL",
+            -text => "See SQL",
             -command => sub { $dialog->Busy;
                               main::see_sql($full_command);
                               $dialog->Unbusy },

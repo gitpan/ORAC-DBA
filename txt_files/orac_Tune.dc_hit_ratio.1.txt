@@ -1,0 +1,4 @@
+
+Oracle recommends trying to keep the hit ratio around 10-15%, or lower.  
+To improve dictionary cache performance, you may want to add memory to the 
+shared pool by increasing the value set for SHARED_POOL_SIZE.

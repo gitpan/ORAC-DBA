@@ -35,7 +35,7 @@ sub what_sql {
    $check_dialog->add("Label", -text => $dialog_text)->pack();
    my $button = $check_dialog->Show;
    if($button eq 'Yes'){
-      printf TEXT "\nUser Process SQL on $v_db:\n\n";
+      printf TEXT "User Process SQL on $v_db:\n\n";
       orac_Users::print_what_sql('SID','OSUser','Username',
                                  'Machine','Program','Fground',
                                  'Bground','Sql_Text');
@@ -50,14 +50,7 @@ sub what_sql {
       $rv = $sth->execute;
 
       while (@v_this_text = $sth->fetchrow) {
-         orac_Users::print_what_sql($v_this_text[0],
-                                     $v_this_text[1],
-                                     $v_this_text[2],
-                                     $v_this_text[3],
-                                     $v_this_text[4],
-                                     $v_this_text[5],
-                                     $v_this_text[6],
-                                     $v_this_text[7]);
+         orac_Users::print_what_sql( @v_this_text );
       }
       $rc = $sth->finish;
       &see_plsql($v_command);
@@ -67,15 +60,16 @@ sub print_what_sql {
    package main;
    my($SID,$OSUser,$Username,$Machine,$Program,
       $Fground,$Bground,$Sql_Text) = @_;
+#234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890
 $^A = "";
 $str = formline <<'END',$SID,$OSUser,$Username,$Machine,$Program,$Fground,$Bground,$Sql_Text;
-^>> ^<<<<<<<< ^<<<<<<<<<< ^<<<<<<<<< ^<<<<<<<<<<< ^>>>>>> ^>>>>>> ^<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< ~~
+^>> ^<<<<<<< ^<<<<<<<<< ^<<<<<<<< ^<<<<<<<<<<< ^>>>>>> ^>>>>>> ^<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< ~~
 END
 print TEXT "$^A";
 }
 sub user_io_orac {
    package main;
-   printf TEXT "\nUser Processes Currently Performing I/O on $v_db:\n\n";
+   printf TEXT "User Processes Currently Performing I/O on $v_db:\n\n";
    orac_Users::print_io_orace('SID','OSUser','Username',
                               'Log_Reads','Phy_Reads','Ratio','Phy_Writes');
    orac_Users::print_io_orace('---','------','--------',
@@ -88,13 +82,7 @@ sub user_io_orac {
    $rv = $sth->execute;
 
    while (@v_this_text = $sth->fetchrow) {
-      orac_Users::print_io_orace($v_this_text[0],
-                                  $v_this_text[1],
-                                  $v_this_text[2],
-                                  $v_this_text[3],
-                                  $v_this_text[4],
-                                  $v_this_text[5],
-                                  $v_this_text[6]);
+      orac_Users::print_io_orace( @v_this_text );
    }
    $rc = $sth->finish;
    &see_plsql($v_command);
@@ -110,7 +98,7 @@ print TEXT "$^A";
 }
 sub user_upd_orac {
    package main;
-   printf TEXT "\nUsers Currently Updating $v_db:\n\n";
+   printf TEXT "Users Currently Updating $v_db:\n\n";
    orac_Users::print_upd_orace('ID','Seg','OSuser','Username',
                                'SID','Extents','Extends',
                                'Waits','Shrinks','Wraps');
@@ -127,16 +115,7 @@ sub user_upd_orac {
    $rv = $sth->execute;
 
    while (@v_this_text = $sth->fetchrow) {
-      orac_Users::print_upd_orace($v_this_text[0],
-                                  $v_this_text[1],
-                                  $v_this_text[2],
-                                  $v_this_text[3],
-                                  $v_this_text[4],
-                                  $v_this_text[5],
-                                  $v_this_text[6],
-                                  $v_this_text[7],
-                                  $v_this_text[8],
-                                  $v_this_text[9]);
+      orac_Users::print_upd_orace( @v_this_text );
    }
    $rc = $sth->finish;
    &see_plsql($v_command);
@@ -153,10 +132,16 @@ print TEXT "$^A";
 }
 sub user_rep_orac {
    package main;
-   printf TEXT "\nUsers Report - List of All Users " .
-               "in $v_db:\n\n%-15s %7s %20s %20s %20s %15s\n\n",
-      'USERNAME', 'USER_ID', 'DEFAULT_TABLESPACE', 
-      'TEMPORARY_TABLESPACE', 'PROFILE', 'CREATED';
+
+   printf TEXT "Users Report - List of All Users\n\n";
+
+   my @titles = ( 'Username', 'User_id', 'Default_tablespace', 
+                  'Temporary_tablespace', 'Profile', 'Created');
+   orac_Users::print_rep_users ( @titles );
+
+   my @titles = ( '--------', '-------', '------------------', 
+                  '--------------------', '-------', '-------');
+   orac_Users::print_rep_users ( @titles );
 
    my $v_command =
           orac_Utils::file_string('sql_files', 'orac_Users',
@@ -166,25 +151,35 @@ sub user_rep_orac {
    $rv = $sth->execute;
 
    while (@v_this_text = $sth->fetchrow) {
-      printf TEXT "%-15s %7s %20s %20s %20s %15s\n",
-         $v_this_text[0],
-         $v_this_text[1],
-         $v_this_text[2],
-         $v_this_text[3],
-         $v_this_text[4],
-         $v_this_text[5];
-      }
+      orac_Users::print_rep_users ( @v_this_text );
+   }
    $rc = $sth->finish;
    &see_plsql($v_command);
 }
+sub print_rep_users {
+   package main;
+
+   my ($Username,$User_id,$Df_tab,$Tmp_tab,$Prof,$Creat) = @_;
+
+#234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890
+$^A = "";
+$str = formline <<'END',$Username,$User_id,$Df_tab,$Tmp_tab,$Prof,$Creat;
+^<<<<<<<<<<<<< ^>>>>>>> ^>>>>>>>>>>>>>>>>>>>>> ^>>>>>>>>>>>>>>>>>>> ^<<<<<<<<<<< ^>>>>>>>>> ~~
+END
+print TEXT "$^A";
+}
+
 sub role_rep_orac {
    package main;
-   printf TEXT "\nRole Report - List of All Roles " .
-               "in $v_db:\n\n%-27s %9s %15s %6s %7s\n",
-      '', 'PASSWORD', '', 'ADMIN', 'DEFAULT';
+   printf TEXT "Role Report - List of All Roles\n\n";
 
-   printf TEXT "%-27s %9s %15s %6s %7s\n\n",
-      'ROLE', 'PROTECTED', 'GRANTEE', 'OPTION', 'ROLE?';
+   my @titles = ( 'Role', 'Password Protected', 'Grantee', 
+                  'Admin Option', 'Default Role?');
+   orac_Users::print_rol_rep ( @titles );
+
+   my @titles = ( '----', '---------', '-------', 
+                  '------', '-------');
+   orac_Users::print_rol_rep ( @titles );
 
    my $v_command =
           orac_Utils::file_string('sql_files', 'orac_Users',
@@ -194,25 +189,36 @@ sub role_rep_orac {
    $rv = $sth->execute;
 
    while (@v_this_text = $sth->fetchrow) {
-      printf TEXT "%-27s %9s %15s %6s %7s\n",
-         $v_this_text[0],
-         $v_this_text[1],
-         $v_this_text[2],
-         $v_this_text[3],
-         $v_this_text[4];
-      }
+      orac_Users::print_rol_rep ( @v_this_text );
+   }
    $rc = $sth->finish;
    &see_plsql($v_command);
 }
+sub print_rol_rep {
+   package main;
+
+   my($Role, $Password, $Grantee, $Admin, $Default) = @_;
+
+#234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890
+$^A = "";
+$str = formline <<'END',$Role,$Password,$Grantee,$Admin,$Default;
+^<<<<<<<<<<<<<<<<<<<<<<<<<< ^>>>>>>>> ^>>>>>>>>>>>>>>>>>>>>>>>>>> ^>>>>> ^>>>>>> ~~
+END
+print TEXT "$^A";
+}
+
 sub curr_users_orac {
    package main;
-   printf TEXT "\nCurrent Database Users on " .
-               "$v_db:\n\n%-12s %8s %5s %5s %4s %6s %10s %4s %12s\n",
-      'ORACLE', 'O/S', ' ', ' ', ' ', 'O/S', ' ', 'LOCK', ' ';
+   printf TEXT "Current Database Users on " .
+               "$v_db:\n\n";
 
-   printf TEXT "%-12s %8s %5s %5s %4s %6s %10s %4s %12s\n\n",
-      'USERNAME', 'USERNAME', 'SID', 'STAT', 
-      'TYPE', 'PID', 'TERM', 'WAIT', 'COMMAND';
+   my @titles = ('Oracle Username', 'O/S Username', 'Sid', 'Stat', 
+                 'Type', 'O/S Pid', 'Term', 'Lock Wait', 'Command');
+   orac_Users::print_curr_users ( @titles );
+
+   my @titles = ('---------------', '------------', '---', '----', 
+                 '----', '-------', '----', '---------', '-------');
+   orac_Users::print_curr_users ( @titles );
 
    my $v_command =
           orac_Utils::file_string('sql_files', 'orac_Users',
@@ -222,26 +228,35 @@ sub curr_users_orac {
    $rv = $sth->execute;
 
    while (@v_this_text = $sth->fetchrow) {
-      printf TEXT "%-12s %8s %5s %5s %4s %6s %10s %4s %12s\n",
-         $v_this_text[0],
-         $v_this_text[1],
-         $v_this_text[2],
-         $v_this_text[3],
-         $v_this_text[4],
-         $v_this_text[5],
-         $v_this_text[6],
-         $v_this_text[7],
-         $v_this_text[8];
-      }
+      orac_Users::print_curr_users ( @v_this_text );
+   }
    $rc = $sth->finish;
+
    &see_plsql($v_command);
 }
+sub print_curr_users {
+   package main;
+
+   my($Ora_Use, $OS_Use, $Sid, $Stat, $Typ, $Pid, $Trm, $Lck, $Comm) = @_;
+
+#234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890
+$^A = "";
+$str = formline <<'END',$Ora_Use,$OS_Use,$Sid,$Stat,$Typ,$Pid,$Trm,$Lck,$Comm;
+^<<<<<<<<<<<<<< ^>>>>>>>>>>> ^>>>> ^<<<<<<< ^<<<<< ^>>>>>> ^>>>>>>>>>>>> ^>>>>>>>> ^>>>>>>>>>>>>> ~~
+END
+print TEXT "$^A";
+}
+
 sub prof_rep_orac {
    package main;
-   printf TEXT "\nProfile Report - List of All Profiles\n\n%-15s %25s %20s\n",
-      'PROFILE', 'RESOURCE', '';
-   printf TEXT "%-15s %25s %20s\n\n",
-      'NAME', 'NAME', 'LIMIT';
+
+   printf TEXT "Profile Report - List of All Profiles\n\n";
+
+   my @titles = ('Profile_Name', 'Resource_Name', 'Limit');
+   orac_Users::print_profs ( @titles );
+
+   my @titles = ('------------', '-------------', '-----');
+   orac_Users::print_profs ( @titles );
 
    my $v_command =
           orac_Utils::file_string('sql_files', 'orac_Users',
@@ -251,20 +266,33 @@ sub prof_rep_orac {
    $rv = $sth->execute;
 
    while (@v_this_text = $sth->fetchrow) {
-      printf TEXT "%-15s %25s %20s\n",
-         $v_this_text[0],
-         $v_this_text[1],
-         $v_this_text[2];
-      }
+      orac_Users::print_profs ( @v_this_text );
+   }
    $rc = $sth->finish;
    &see_plsql($v_command);
 }
+sub print_profs {
+   package main;
+
+   my($prof, $res, $limit) = @_;
+
+#234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890
+$^A = "";
+$str = formline <<'END',$prof, $res, $limit;
+^<<<<<<<<<<<<<<<<<<<<<<<< ^<<<<<<<<<<<<<<<<<<<<<<<< ^>>>>>>>>>>>>>>>>>>>>>>>> 
+END
+print TEXT "$^A";
+}
+
 sub quot_rep_orac {
    package main;
-   printf TEXT "\nQuota Report\n\n%-15s %15s %10s %10s\n",
-      '', 'TABLESPACE', 'MB', 'MAX_MB';
-   printf TEXT "%-15s %15s %10s %10s\n\n",
-      'USERNAME', 'NAME', 'QUOTA', 'QUOTA';
+   printf TEXT "Quota Report\n\n";
+
+   my @titles = ('UserName', 'TableSpace Name', 'MB Quota', 'Max MB Quota');
+   orac_Users::print_quot ( @titles );
+
+   my @titles = ('--------', '---------------', '--------', '------------');
+   orac_Users::print_quot ( @titles );
 
    my $v_command =
           orac_Utils::file_string('sql_files', 'orac_Users',
@@ -274,13 +302,22 @@ sub quot_rep_orac {
    $rv = $sth->execute;
 
    while (@v_this_text = $sth->fetchrow) {
-      printf TEXT "%-15s %15s %10d %10s\n",
-         $v_this_text[0],
-         $v_this_text[1],
-         $v_this_text[2],
-         $v_this_text[3];
-      }
+      orac_Users::print_quot ( @v_this_text );
+   }
    $rc = $sth->finish;
    &see_plsql($v_command);
 }
+sub print_quot {
+   package main;
+
+   my($user, $tabsp, $mb, $maxmb) = @_;
+
+#234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890
+$^A = "";
+$str = formline <<'END',$user, $tabsp, $mb, $maxmb;
+^<<<<<<<<<<<<<<<<<<<<< ^>>>>>>>>>>>>>>>>>>>>> ^>>>>>>>>>>>>>> ^>>>>>>>>>>>>>>
+END
+print TEXT "$^A";
+}
+
 1;

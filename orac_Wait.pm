@@ -151,7 +151,7 @@ sub roll_print {
       $sid,$extents,$extends,$waits,$shrinks,$wraps) = @_;
 $^A = "";
 $str = formline <<'END',$usn,$name,$osuser,$username,$serial,$sid,$extents,$extends,$waits,$shrinks,$wraps;
-^<<<<<<<<<< ^<<<<<<<<<< ^<<<<<<<<<<< ^<<<<<<<<<<<<< ^>>>>> ^>>>> ^>>>>>> ^>>>>>> ^>>>> ^>>>>>> ^>>>> ~~
+^<<<<<<<<< ^<<<<<<<<<< ^<<<<<<<<<< ^<<<<<<<<<<<<< ^>>>>> ^>>>> ^>>>>>> ^>>>>>> ^>>>> ^>>>>>> ^>>>> ~~
 END
 print TEXT "$^A";
 }
@@ -253,8 +253,7 @@ print TEXT "$^A";
                                $top->Unbusy },
 	     -cursor  => 'top_left_arrow',
              -padx => 0,
-             -pady => 0,
-             -font => '-adobe-helvetica-medium-r-normal--8-80-75-75-p-46-*-1');
+             -pady => 0);
 
       $v_text->window('create', 'end', -window => $v_bouton);
    }

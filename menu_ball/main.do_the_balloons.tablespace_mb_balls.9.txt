@@ -1,2 +1,0 @@
-This report gives a current state-of-play on the DBA_AUTOEXTEND view, especially written for the 'office' databases.
-(You will get errors if this database does not have the DBA_AUTOEXTEND view)

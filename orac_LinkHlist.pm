@@ -34,7 +34,6 @@ sub link_orac {
    $menu_bar = $dialog->Frame(width => 100)->pack(@layout_menu_bar);
    $menu_bar->Label(  
        -text        => 'Links',
-       -font        => '-adobe-helvetica-bold-r-narrow--18-120-75-75-p-46-*-1',
        -borderwidth => 2,
        -relief      => 'flat',
        )->pack(-side => 'right', -anchor => 'e');
@@ -175,7 +174,7 @@ sub do_a_link {
       }
       $j_counter++;
    }
-   my $v_bouton = $v_text->Button(-text => "See PL/SQL",
+   my $v_bouton = $v_text->Button(-text => "See SQL",
       -command => sub { $local_dialog->Busy;
                         main::see_sql($v_command);
                         $local_dialog->Unbusy },

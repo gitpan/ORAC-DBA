@@ -1,3 +1,4 @@
-Gives you a list of all the owners of views within the database. Double-click on the owner to get a list of all their
-views, and then double-click on the view to get its copyable SQL with which you can re-create the view elsewhere, or
-which you may just wish to view, to see how the view is formed.
+Gives you a list of all the owners of views within the database. Double-click 
+on the owner to get a list of all their views, and then double-click on the 
+view to get its copyable SQL with which you can re-create the view elsewhere, 
+or which you may just wish to view, to see how the view is formed.

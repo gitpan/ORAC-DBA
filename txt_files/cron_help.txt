@@ -10,8 +10,9 @@ M H D m d cmd
   d:   The day of the week (0-6, 0=Sunday)
   cmd: The program to run; the string passed to 'sh'
 
-The first five fields may be a single digit, a list of digits separated by commas, a range
-of digits using a dash, or an asterisk (meaning all legal values).
+The first five fields may be a single digit, a list of digits separated 
+by commas, a range of digits using a dash, or an asterisk (meaning all 
+legal values).
 
 Points to Note, if you're having problems
 -----------------------------------------
