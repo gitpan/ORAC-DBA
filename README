@@ -12,12 +12,12 @@ Orac --  an Oracle 7.3 and Oracle 8 DBA GUI tool for Perl/Tk
 
 PLEASE NOTE:
 
-   Some of the Oracle SQL scripts which come with this perl program,
+   Some of the Oracle SQL scripts which come with this Perl program,
    are copyrighted to Brian Lomasky.  Please seek clarification from
    Brian before you extend the use of these SQL scripts beyond this
-   perl program.  Such scripts can be easily identified by the header:
+   Perl program.  Such scripts can be easily identified by the header:
 
-   /* From Oracle Scripts, O'Reilly & Associates, Inc. */
+   /* From Oracle Scripts, O Reilly and Associates, Inc. */
    /* Copyright 1998 by Brian Lomasky, DBA Solutions, Inc., */
    /* lomasky@earthlink.net */
 
@@ -41,23 +41,23 @@ REALLY QUICK START GUIDE:
 SLIGHTLY LESS QUICK START GUIDE:
 
 *). Load perl5.005_02, DBD-Oracle-0.54, DBI-1.02 & Tk402.004
-*). Unzip (gzip -d, gunzip) the ORAC-DBA-0.05.tar.gz file
-*). Untar (tar xvf) the ORAC-DBA-0.05.tar file
-*). cd ORAC-DBA-0.05
+*). Unzip (gzip -d, gunzip) the ORAC-DBA-?.??.tar.gz file
+*). Untar (tar xvf) the ORAC-DBA-?.??.tar file
+*). cd ORAC-DBA-?.??
 *). Set ORACLE_HOME in your environment
 *). Run orac_dba.pl, first making sure the top line of the
-    file has the right perl string address, eg:
+    file has the right Perl string address, eg:
         => #!/usr/local/bin/perl
-    Or run it with the perl program directly, 'perl orac_dba.pl'.
+    Or run it with the Perl program directly, 'perl orac_dba.pl'.
 *). Most things should be fairly straightforward after that.
 
 ABOUT ORAC:
 
-(Preamble: This tool was developed on an Ultra-5 Sun Solaris 2.6 Sun 
-workstation.  I will be porting Orac to Linux soon.  I will also be porting 
-it to the Win32.  In the meantime, there may be incompatibilities on your 
-workstation, which may need a little source code tinkering.  My apologies.  
-Please mail me if this is the case.)
+Preamble: This tool was developed on an Ultra-5 Sun Solaris 2.6 Sun 
+workstation.  There may be incompatibilities on your workstation, 
+which may need a little source code tinkering.  My apologies.  
+Please mail me if this is the case.  Even better, email me the
+coded up solution :-)
 
 Orac is named after the original Universal Computer, 'Orac' from Blakes' Seven. 
 It is a Perl/Tk tool written in order to store many different and hopefully 
@@ -68,6 +68,9 @@ functionality and GUI-ness simplicity.  If you have any useful SQL scripts,
 which you would like to be included within Orac, or requirements which you 
 think may be useful to others, please mail them to me and I'll try and embed 
 them in the next release. 
+
+If you would like to expand Orac into an Open-Source "Gimp-Like" internet
+project, then even better.
 
 Simple graphical ideas for turning difficult to read V$ table information 
 into useful pictures are particularly welcomed, as is functionality 
@@ -98,5 +101,11 @@ Vers Date   Comment
             Thanks to Tim Bunce for constructive criticism.
 0.04 Apr 99 Adjustments after first DBI-Users release.
 0.05 Apr 99 More Adjustments after first DBI-Users release.
+0.06 Apr 99 Cleaned up a few extraneous debug statements.  Decided to not
+            attempt ports, after hearing from several Linux users that
+            Orac ran "out-of-the-box", also NT and my mind do not fit
+            together.
+            Tasklist this time, resizing of windows should be better.
+            Hit Ratios values should be clearer.
 
 EOF

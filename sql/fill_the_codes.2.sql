@@ -1,4 +1,4 @@
-/* From Oracle Scripts, O Reilly & Associates, Inc. */
+/* From Oracle Scripts, O Reilly and Associates, Inc. */
 /* Copyright 1998 by Brian Lomasky, DBA Solutions, Inc., */
 /* lomasky@earthlink.net */
 
@@ -52,7 +52,7 @@ l_segn sys.dba_rollback_segs.segment_name%TYPE;
 l_opt number;
 l_iexs varchar2(16);
 l_nxtex_siz varchar2(16);
-l_ownam varchar2(6);
+l_ownam varchar2(16);
 l_opt_siz varchar2(10);
 l_ln number := 0;
 l_bsz varchar2(16);

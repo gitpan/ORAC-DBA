@@ -32,9 +32,8 @@ $ec = 'white';
 $fc = 'black';
 $mw = MainWindow->new();
 
-$mb = $mw->Frame()->pack(side => 'top',anchor => 'w');
 my $li = $mw->Pixmap('-file' => 'sql/orac.bmp');
-my(@layout_mb) = qw/-side top -padx 5 -expand yes -fill both/;
+my(@layout_mb) = qw/-side top -padx 5 -expand no -fill both/;
 $mb = $mw->Frame->pack(@layout_mb);
 $mb->Label(-image => $li,-borderwidth => 2,-relief => 'flat')->pack(-side => 'left',-anchor => 'w');
 
@@ -56,7 +55,6 @@ $ts_mb->command(-label => 'Extents Report',
     -command => sub {&bz;&f_clr;&prep_lp('Extents Report','ext_orac','1',$rp_8_opt3,0);&ubz});
 $ts_mb->command(-label => 'Max Extents Free Space',-command => sub {&bz;&f_clr;my @params;my $i;
        for ($i = 0;$i < 9;$i++){$params[$i] = $Block_Size;};
-print TEXT "blocksize >$Block_Size<\n params >@params<\n";
        &prep_lp('Max Extents','max_ext_orac','1',$rp_8a_bits,0,@params);&ubz});
 $sw_flag[0] = $ts_mb->command(-label => 'DBA Tables Viewer', 
        -command => sub {&f_clr;&sub_win(0,$mw,'dbas_orac','1','DBA Tables',50)});
@@ -139,7 +137,7 @@ $mb->Menubutton(-text => 'Tuning',-relief => 'raised',-borderwidth => 2,-menuite
    &prep_lp('','roll_orac','2',$rp_biz_roll_2,0);
    &prep_lp('','roll_orac','3',$rp_3_biggish,0);
    &prep_lp('','roll_orac','4',$rp_big_one_tiny,0);&print_roll_txt;&ubz},],
-     [Button  => 'Hit Ratios',-command => sub {&bz;&f_clr();&tune_health();&ubz},],
+     [Button  => 'Hit Ratios',-command => sub {&bz;&tab_det_orac('Hit_Ratios','tune_health');&ubz},],
      [Separator => ''],
      [Cascade => 'Parameters',-menuitems =>
       [[Button  => 'NLS Parameters',-command => sub {&bz;&f_clr();
@@ -338,18 +336,21 @@ sub get_db {
 }
 sub see_plsql {
    my ($res,$dum) = @_;
-   my $b = $v_text->Button(-text => $ssq,-command => sub {&bz;&see_sql($mw,$res);&ubz});
+   my $b = $v_text->Button(-text => $ssq,-command => sub {&see_sql($mw,$res)});
    print TEXT "\n\n  ";
    $v_text->window('create','end',-window => $b);
    print TEXT "\n\n";
 }
 sub see_sql {
+   $_[0]->Busy;
    my $d = $_[0]->DialogBox(-title => $ssq);
-   my $t = $d->Scrolled('Text',-height => 16,-width => 60,-wrap => 'none',-cursor => undef,-foreground => $fc,-background => $bc);
+   my $t = $d->Scrolled('Text',-height => 16,-width => 60,-wrap => 'none',-cursor => undef,
+                 -foreground => $fc,-background => $bc);
    $t->pack(-expand => 1,-fil => 'both');
    tie (*THIS_TEXT,'Tk::Text',$t);
    print THIS_TEXT "$_[1]\n";
-   $d->Show;
+   orac_Show($d);
+   $_[0]->Unbusy;
 }
 sub about_orac {
    open(TXT_FILE,"README");
@@ -733,10 +734,10 @@ sub who_what {
    $loc_text->pack(-expand => 1, -fil => 'both');
    tie (*TEXT, 'Tk::Text', $loc_text);
    my $cm = &prep_lp('Holding SQL','who_what','1',$rp_8_what,2,$os_user,$oracle_user,$sid);
-   my $b = $loc_text->Button(-text => $ssq,-command => sub {$d->Busy;&see_sql($d,$cm);$d->Unbusy});
+   my $b = $loc_text->Button(-text => $ssq,-command => sub {&see_sql($d,$cm)});
    $loc_text->window('create','end', -window => $b);
    tie (*TEXT, 'Tk::Text', $v_text);
-   $d->Show;
+   &orac_Show($d);
 }
 sub all_stf {
    my $cm = &f_str($_[0],$_[1]);
@@ -974,7 +975,7 @@ sub univ_form {
    }
    $bb->Button(-text => $uf_txt,-command => sub {$bd->Busy;&selector($bd,$uf_type);$bd->Unbusy}
               )->pack(-side => 'right',-anchor => 'e');
-   $bd->Show;
+   &orac_Show($bd);
 }
 sub selector {
    my($sel_d,$uf_type) = @_;
@@ -1044,10 +1045,10 @@ sub and_finally {
       $gen_sc = $c_br->Scale( -orient => 'horizontal',-label => "Record of " . $max_row,-length => 400,
                               -sliderrelief => 'raised',-from => 1,-to => $max_row,-tickinterval => ($max_row/8),
                               -command => [ \&calc_scale_record ])->pack(side => 'left');
-      $c_br->Button(-text => $ssq,-command => sub {$c_d->Busy;&see_sql($c_d,$l_sel_str);$c_d->Unbusy}
+      $c_br->Button(-text => $ssq,-command => sub {&see_sql($c_d,$l_sel_str)}
                    )->pack(side => 'right');
       &go_for_gold();
-      $c_d->Show;
+      &orac_Show($c_d);
    }
    undef $ary_ref;
 }
@@ -1244,7 +1245,7 @@ sub really_build_index {
       print L_TXT "   pctfree ${pct_free};\n\n";
       print L_TXT "\nrem Average Index Entry Size:  ${avg_entry_size}   ";
 
-      my $b = $l_text->Button(-text => "Calculation SQL",-command => sub { $d->Busy;&see_sql($d,$cm);$d->Unbusy });
+      my $b = $l_text->Button(-text => "Calculation SQL",-command => sub{&see_sql($d,$cm)});
       $l_text->window('create','end', -window => $b);
 
       print L_TXT "\nrem Database Block Size:       ${Block_Size}\n";
@@ -1253,7 +1254,7 @@ sub really_build_index {
       print L_TXT "rem Space For Each Index:      ${space}\n";
       print L_TXT "rem Blocks Required:           ${blocks_req}\n\n";
    }
-   $d->Show;
+   &orac_Show($d);
 }
 sub ind_prep {
    my $cm = shift;
@@ -1325,23 +1326,28 @@ sub tab_det_orac {
      $Grand_Total = $Grand_Total + $Total;
      $Grand_Used_Mg = $Grand_Used_Mg + $Used_Mg;
      $Grand_Free_Mg = $Grand_Free_Mg + $Free_Mg;
-     if($func eq 'tabspace_diag'){
+     if($func ne 'tab_det_orac'){
         $Fname = '';
+     } 
+     if($func eq 'tune_health'){
+        $Use_Pct = $Total;
      }
      &add_item( $func,$c,$i,$T_Space,$Fname,$Total,$Used_Mg,$Free_Mg,$Use_Pct);
      $i++;
    }
    $sth->finish;
 
-   $Grand_Use_Pct = (($Grand_Used_Mg/$Grand_Total)*100.00);
-   &add_item($func,$c,0,'','',$Grand_Total,$Grand_Used_Mg,$Grand_Free_Mg,$Grand_Use_Pct);
+   if($func ne 'tune_health'){
+      $Grand_Use_Pct = (($Grand_Used_Mg/$Grand_Total)*100.00);
+      &add_item($func,$c,0,'','',$Grand_Total,$Grand_Used_Mg,$Grand_Free_Mg,$Grand_Use_Pct);
+   }
 
-   my $b = $c->Button( -text => $ssq,-command => sub {$d->Busy;&see_sql($d,$cm);$d->Unbusy});
+   my $b = $c->Button( -text => $ssq,-command => sub{&see_sql($d,$cm)});
    my $y_start = &work_out_why($i);
    $c->create('window', '1c',"$y_start" . 'c', -window => $b,qw/-anchor nw -tags item/);
    $c->configure(-scrollregion => [ $c->bbox("all") ]);
    $c->pack(-expand => 'yes',-fill => 'both');
-   $d->Show();
+   &orac_Show($d);
 }
 sub work_out_why {
     return (0.8 + (1.2 * $_[0]));
@@ -1361,7 +1367,13 @@ sub add_item
    my $thickness = 0.4;
    my $y_start = &work_out_why($i);
    my $y_end = $y_start + 0.4;
-   $dst_f = ($Use_Pct/20.0) + 0.4;
+   my $chopper;
+   if($func ne 'tune_health'){
+      $chopper = 20.0;
+   } else {
+      $chopper = 10.0;
+   }
+   $dst_f = ($Use_Pct/$chopper) + 0.4;
    $c->create(('rectangle', "$dst_f" . 'c',"$y_start". 'c','0.4c',"$y_end" . 'c'),-fill => $hc);
   
    $y_start = $y_start - 0.4;
@@ -1376,8 +1388,10 @@ sub add_item
    }
    $c->create(('text','0.4c',"$y_start" . 'c',-anchor => 'nw',-justify => 'left',-text => $this_text));
    $y_start = $y_start + 0.4;
-   $c->create(('text','5.2c',"$y_start" . 'c',-anchor => 'nw',-justify => 'left',
-          -text => sprintf("%10.2fM Total %10.2fM Used %10.2fM Free",$Total, $Used_Mg, $Free_Mg)));
+   if($func ne 'tune_health'){
+      $c->create(('text','5.2c',"$y_start" . 'c',-anchor => 'nw',-justify => 'left',
+             -text => sprintf("%10.2fM Total %10.2fM Used %10.2fM Free",$Total, $Used_Mg, $Free_Mg)));
+   }
 }
 sub dbwr_fileio {
    my $this_title = "DBWR I/O Report $v_db";
@@ -1409,12 +1423,12 @@ sub dbwr_fileio {
          $dbwr_fi[$i][3],$dbwr_fi[$i][4],$dbwr_fi[$i][5],$dbwr_fi[$i][6]);
       }
    }
-   my $b = $c->Button(-text => $ssq,-command => sub {$d->Busy;&see_sql($d,$cm);$d->Unbusy});
+   my $b = $c->Button(-text => $ssq,-command => sub {&see_sql($d,$cm)});
    my $y_start = &this_pak_get_y(($i + 1));
    $c->create('window', '1c', "$y_start" . 'c', -window => $b,qw/-anchor nw -tags item/);
    $c->configure(-scrollregion => [ $c->bbox("all") ]);
    $c->pack(-expand => 'yes',-fill => 'both');
-   $d->Show();
+   &orac_Show($d);
 }
 sub this_pak_get_y {
    return (($_[0] * 2.5) + 0.2);
@@ -1455,6 +1469,7 @@ sub dbwr_print_fileio {
 }
 sub gen_hlist {
    ($g_typ,$g_hlst,$gen_sep) = @_;
+
    $g_mw = $mw->DialogBox(-title => "$g_hlst $v_db");
    $hlist = $g_mw->Scrolled('HList',-drawbranch => 1,-separator => $gen_sep,-indent => 50,
                             -command => \&show_or_hide_tab,-foreground => $fc,-background => $bc);
@@ -1489,7 +1504,7 @@ sub gen_hlist {
       $all_the_owners{"$owner"} = 'closed';
    }
    $sth->finish;
-   $g_mw->Show();
+   &orac_Show($g_mw);
 }
 sub show_or_hide_tab {
    my $hlist_thing = $_[0];
@@ -1501,6 +1516,7 @@ sub show_or_hide_tab {
          $hlist->info('next', $hlist_thing);
          $hlist->entryconfigure($hlist_thing, -image => $open_folder_bitmap);
          $all_the_owners{"$hlist_thing"} = 'open';
+         
          &add_generics($hlist_thing);
       } else {
          $hlist->entryconfigure($hlist_thing, -image => $closed_folder_bitmap);
@@ -1510,8 +1526,8 @@ sub show_or_hide_tab {
    }
 }
 sub add_generics {
-   my $owner = $_[0];
    $g_mw->Busy;
+   my $owner = $_[0];
    if ($g_typ == 1){
       my $sth = $dbh->prepare( &f_str($g_hlst,'2') ) || die $dbh->errstr; 
       $sth->bind_param(1,$owner);
@@ -1528,8 +1544,8 @@ sub add_generics {
    $g_mw->Unbusy;
 }
 sub do_a_generic {
-   $g_mw->Busy;
    my ($input,$do_what_flag,$second_hlist) = @_;
+   $g_mw->Busy;
    my $owner;
    my $generic;
    my $dum;
@@ -1607,7 +1623,7 @@ sub do_a_generic {
    print L_TEXT "\n\n  ";
 
    my @b;
-   $b[0] = $l_txt->Button(-text => $ssq,-command => sub {$d->Busy;&see_sql($d,$cm); $d->Unbusy });
+   $b[0] = $l_txt->Button(-text => $ssq,-command => sub {&see_sql($d,$cm)});
    $l_txt->window('create', 'end', -window => $b[0]);
 
    if ($loc_g_hlst eq 'Tables'){
@@ -1630,85 +1646,13 @@ sub do_a_generic {
       $l_txt->window('create','end',-window => $b[$i]);
    }
    print L_TEXT "\n\n";
-   $d->Show;
+   &orac_Show($d);
    $g_mw->Unbusy;
-}
-sub tune_health {
-   my $this_title = "Tuning Report $v_db";
-   my $d = $mw->DialogBox(-title => $this_title);
-   my $cf = $d->Frame;
-   my @h_res;
-   $cf->pack(-expand => '1',-fill => 'both');
-
-   my $c = $cf->Scrolled('Canvas',-relief => 'sunken',-bd => 2,-width => 500,-height => 280,-background => $bc);
-   my $cm = &f_str('tune_health','1');
-   my $sth = $dbh->prepare($cm) || die $dbh->errstr; 
-   $sth->execute;
-   while (@res = $sth->fetchrow) {
-     $h_res[$res[0]] = $res[1];
-   }
-   $sth->finish;
-
-   my $y_start = &add_tune_item($c,$h_res[1],$h_res[2],($h_res[5]/($h_res[3] + $h_res[4])),$h_res[6],$h_res[7]);
-   my $b = $c->Button(-text => $ssq,-command => sub {$d->Busy;&see_sql($d,$cm);$d->Unbusy});
-   $c->create('window', '1c', "$y_start" . 'c', -window => $b,qw/-anchor nw -tags item/);
-
-   $c->configure(-scrollregion => [ $c->bbox("all") ]);
-   $c->pack(-expand => 'yes',-fill => 'both');
-   $d->Show();
-}
-sub add_tune_item
-{
-   my ($c,$dc_hit_ratio,$lc_hit_ratio,$hit_ratio,$ratio,$w2wait_ratio) = @_;
-   my $y_start = &f_tune_line($c,1.0     ,20.00,$dc_hit_ratio,10.00,15.00,'dc_hit_ratio');
-   $y_start = &f_tune_line   ($c,$y_start,5.00 ,$lc_hit_ratio,1.00, 1.00,'lc_hit_ratio');
-   $y_start = &f_tune_line   ($c,$y_start,50.00,$hit_ratio,   5.00, 30.00,'buffer cache hit_ratio');
-   $y_start = &f_tune_line   ($c,$y_start,50.00,$w2wait_ratio,1.00, 1.00,'w2wait_ratio');
-   $y_start = &f_tune_line   ($c,$y_start,5.00 ,$ratio,       1.00, 1.00,'rollback ratio');
-   return $y_start;
-}
-sub f_tune_line {
-   my($c,$y_start,$smll_div,$l_hit_ratio,$low_accept,$high_accept,$l_title) = @_;
-   my $screen_ratio = 9;
-   my $rec_width = 0.12;
-   my $lrg_div = 100.00;
-   my $y_end = $y_start + 0.3;
-   my $division;
-   if($l_hit_ratio >= ($smll_div - 1.00)){
-      $division = $lrg_div;
-   } else {
-      $division = $smll_div;
-   }
-   my $multiplier = (100.00/$division);
-   my $low_i = $low_accept * $multiplier;
-   my $high_i = $high_accept * $multiplier;
-
-   for ($i = 0;$i < 100;$i++){
-      $x_start = ($i/$screen_ratio) + 1.00;
-      $x_stop = $x_start - $rec_width;
-      if(($i == $low_i) || ($i == $high_i)){
-         $c->create(('rectangle',"$x_start" . 'c',sprintf("%fc",($y_start - 0.2)),"$x_stop" . 'c',
-                   sprintf("%fc",($y_end + 0.2))),-fill => $ec);
-      }
-      $c->create(('rectangle',"$x_start" . 'c',"$y_start" . 'c',"$x_stop" . 'c',"$y_end" . 'c'),-fill => $sc);
-      if((($l_hit_ratio * 100) /$division) > $i){
-         $c->create(('rectangle',"$x_start" . 'c',"$y_start" . 'c',"$x_stop" . 'c',"$y_end" . 'c'),-fill => $hc);
-      }
-   }
-   $c->create(('text',"$x_start" . 'c',"$y_start" . 'c',-anchor => 'nw',
-              -justify => 'left',-text => sprintf("%8.2f",$division) . '%'));
-   $y_start = $y_start + 0.5;
-  
-   $the_ratio = sprintf("%f",$l_hit_ratio);
-   $the_ratio =~ s/[0]*$//g;
-   $the_ratio =~ s/\.$/\.0/g;
-   $c->create(('text','0.8c',"$y_start" . 'c',-anchor => 'nw',-justify => 'left',-text => "$l_title = $the_ratio" . ' %'));
-   return $y_start + 0.8;
 }
 sub mes {
    my $d = $_[0]->DialogBox();
    $d->Label(text => $_[1])->pack();
-   $d->Show;
+   &orac_Show($d);
 }
 sub sub_win {
    my($flag,$lw,$mod,$pack,$tit,$width) = @_;
@@ -1723,9 +1667,11 @@ sub sub_win {
       if($detected == 1){
          $sw = MainWindow->new();
          $sw->title($tit);
-         $sw->Label( text   => 'Double-Click Selection ', anchor => 'n', relief => 'groove')->pack();
-         $hand = $sw->ScrlListbox(-width => $width,-background => $bc,-foreground => $fc);
-         $sw->Button(-text => 'Exit',-command => sub {$sw->withdraw();$sw_flag[$flag]->configure(-state => 'active') } 
+         $sw->Label( text   => 'Double-Click Selection ', anchor => 'n', relief => 'groove')->pack(-expand => 'no');
+         $hand = $sw->ScrlListbox(-width => $width,-background => $bc,-foreground => $fc)->pack(-expand => 'yes', -fill => 'both');
+         my(@lay_exf) = qw/-side bottom -anchor se -padx 5 -expand no/;
+         my $exf = $sw->Frame->pack(@lay_exf);
+         $exf->Button(-text => 'Exit',-command => sub {$sw->withdraw();$sw_flag[$flag]->configure(-state => 'active') } 
              )->pack(-side => 'bottom', -anchor => 'se');
       }
       $hand->insert('end', @res);
@@ -1753,6 +1699,24 @@ sub sub_win {
              &prep_lp('Sid Stats','sel_sid','1',$rp_4_mid_big,0,$hand->get('active'));$sw->Unbusy});
       }
    }
+}
+sub orac_Show {
+   # Written to replace DialogBox $x->Show command, to stop bottom frame from filling up screen
+   # on user dialog screen expansions.
+   my($d) = @_;
+   my $old_focus = $d->focusSave;
+   my $old_grab = $d->grabSave;
+   $d->Subwidget("top")->pack(fill => 'both',expand => 'y');
+   $d->Subwidget("bottom")->pack(expand => 'n');
+   $d->Popup();
+   $d->grab;
+   $d->waitVisibility;
+   $d->focus;
+   $d->waitVariable(\$d->{"selected_button"});
+   $d->grabRelease;
+   $d->withdraw;
+   &$old_focus;
+   &$old_grab;
 }
 BEGIN {
    $SIG{__WARN__} = sub {
