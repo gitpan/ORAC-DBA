@@ -1,0 +1,4 @@
+Drill down into all tables on database, and retrieve copyable SQL to recreate all significant table attributes.
+Added Index Builder 06-JAN-99 which creates pre-sized index creation scripts for specific tables.
+Added Universal Form 15-JAN-99 to read Info from all tables in database.  Designed for checking ref data, but can
+be used for all sorts of other purposes, where you need to get data out quickly.

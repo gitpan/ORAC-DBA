@@ -1,0 +1,1 @@
+Gather information on grants given to a single user.

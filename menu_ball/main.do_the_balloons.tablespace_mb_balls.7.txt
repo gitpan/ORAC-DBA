@@ -1,0 +1,4 @@
+This lists free space within a tablespace, along with any objects that have NEXT extents larger than the largest free
+block in that tablespace.  Objects that cannot generate another extent are marked as needing immediate attention
+(Panic), and objects that cannot generate two more extents are flagged with a warning (Warn).  Flags such as (x2)
+tell you that two objects require attention.

@@ -1,0 +1,1 @@
+Tells you if a user is currently updating database.

@@ -1,0 +1,12 @@
+The pulldown pick list of databases is for
+convenience only.  If you wish to connect to ANY database
+available over the network via Oracle Names, then please
+delete the default database shown, using the text cursor, and
+then insert the full connection string of the database of
+your choice (eg: my_new_database.xx.oracle.com).
+
+Now insert the appropriate SYSTEM user password and press
+the 'Connect' button to gain access to the database.
+
+(It does not matter if the database you wish to go to is
+not in the list, as long as it is in Oracle Names).

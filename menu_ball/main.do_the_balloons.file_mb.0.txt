@@ -1,0 +1,1 @@
+Various general options; reconnection, terms of use, exiting Orac

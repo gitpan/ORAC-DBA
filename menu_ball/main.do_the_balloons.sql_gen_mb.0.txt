@@ -1,0 +1,1 @@
+Drill down into the database to provide copyable SQL on every database object

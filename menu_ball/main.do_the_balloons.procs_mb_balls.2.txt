@@ -1,0 +1,1 @@
+Displays connect time of all sessions in the database.

@@ -1,0 +1,15 @@
+Command
+-------
+ALTER SYSTEM KILL SESSION ' integer1 , integer2 ' ;
+
+
+KILL SESSION terminates a session and any ongoing transactions.
+You must identify the session with both of the following values 
+from the V$SESSION view:
+
+
+*). integer1 => is the value of the SID column.
+*). integer2 => is the value of the SERIAL# column.
+
+
+EOF

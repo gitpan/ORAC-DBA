@@ -1,0 +1,4 @@
+The 1st option generates copyable SQL, to give you a rough script for recreating your database from scratch via
+svrmgrl. Although the script generated will need editing, you should get all the create database,
+create tablespace commands etc. 07-JAN-99 2nd script recreates all other raw database structures, users, roles etc.
+(My favourite utilities in Orac - AndyD)

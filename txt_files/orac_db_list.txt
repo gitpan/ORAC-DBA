@@ -1,0 +1,3 @@
+mydb1.uk.website.com
+mydb3.uk.website.com
+mydb2.uk.website.com

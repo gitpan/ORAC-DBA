@@ -1,0 +1,16 @@
+ select decode(sign(9999999-( orac_insert_v_bytes )), -1, 
+               lpad(trunc( orac_insert_v_bytes / 1000000), 3)||' M', 
+        decode(sign(9999- orac_insert_v_bytes ), -1, 
+               lpad(trunc( orac_insert_v_bytes / 1000), 3)||' k', 
+               lpad( orac_insert_v_bytes, 5))) bytes, 
+        decode(sign(9999999-( orac_insert_v_used )), -1, 
+               lpad(trunc( orac_insert_v_used / 1000000), 3)||' M', 
+        decode(sign(9999- orac_insert_v_used ), -1, 
+               lpad(trunc( orac_insert_v_used / 1000), 3)||' k', 
+               lpad( orac_insert_v_used, 5))) used, 
+        decode(sign(9999999-( orac_insert_v_free )), -1, 
+               lpad(trunc( orac_insert_v_free / 1000000), 3)||' M', 
+        decode(sign(9999- orac_insert_v_free ), -1, 
+               lpad(trunc( orac_insert_v_free / 1000), 3)||' k', 
+               lpad( orac_insert_v_free, 5))) free 
+ from dual 

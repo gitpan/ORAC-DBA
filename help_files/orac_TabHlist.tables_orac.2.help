@@ -1,0 +1,7 @@
+Set this flag to use the total number of bytes the
+segment is currently using (instead of the table's
+original INITIAL_EXTENT value), as the value to
+use for the INITIAL_EXTENT in the copyable SQL, so
+that the table would be recreated in a single extent.
+(The NEXT_EXTENT is limited to no more than the
+INITIAL_EXTENT value)

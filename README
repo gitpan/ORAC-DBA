@@ -1,0 +1,158 @@
+Orac --  an Oracle 7.3 and Oracle 8 DBA GUI tool for Perl 5.
+
+   Copyright (c) 1998,1999  Andy Duncan, England
+
+   email: andy_j_duncan@yahoo.com
+
+   You may distribute under the terms of either the GNU General Public
+   License or the Artistic License, as specified in the Perl README file,
+   with the exception that it cannot be placed on a CD-ROM or similar media
+   for commercial distribution without the prior approval of the author.
+
+WARNING:
+
+   THIS SOFTWARE IS PROVIDED "AS IS" IN THE HOPE THAT IT WILL BE USEFUL, 
+   BUT WITHOUT ANY WARRANTY; WITHOUT EVEN THE IMPLIED WARRANTY OF 
+   MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
+ 
+
+*** QUICK START GUIDE:
+
+*). Load perl5.005_02, DBD-Oracle-0.54, DBI-1.02 & Tk800.011
+*). Unzip (gzip -d, gunzip) the ORAC-DBA-0.01.tar.gz file
+*). Untar (tar xvf) the ORAC-DBA-0.01.tar file
+*). cd ORAC-DBA-0.01
+*). Set and export ORACLE_HOME in your environment
+*). Run ./orac_dba.pl, first making sure the top line of the
+    file has the right perl string address, eg:
+        => #!/usr/local/bin/perl
+*). Most things should be fairly straightforward after that.
+
+
+
+*** START GUIDE:
+
+*). Load perl5.005_02, DBD-Oracle-0.54, DBI-1.02 & Tk800.011
+
+*). Unzip (gzip -d, gunzip) the ORAC-DBA-0.01.tar.gz file
+
+*). Untar (tar xvf) the ORAC-DBA-0.01.tar file
+
+*). cd ORAC-DBA-0.01
+
+*). Edit txt_files/orac_db_list.txt and place in it all the database connect
+    strings you use most often via Oracle Names, or SQL*Net.
+
+*). Go to the 'dbs' directory, where you will find a number of files. These
+    have been set up as in the following example.
+
+    *. Three users are to regularly use Orac: guest, user1 and user2
+
+    *. guest is the default user for occasional access
+ 
+    *. user1 is the admin user, user2 is a typical known user
+
+    *. Put all the users in the orac_login.dbf file
+
+              guest^
+              user1^
+              user2^
+
+    *. For each user, create a file <the_user>_user.dbf
+
+    *. In the <the_user>_user.dbf, put three entries for:
+
+              password^default_background_colour^default_foreground_colour^
+
+    *. In the orac_admin.dbf file, place the user you want to 
+       administer the system:
+
+              user1^
+              
+    *. The 'guest' user is hardcoded in the Orac perl code, so please do not
+       adjust entries for this user, until you've worked out how Orac works, 
+       and then alter it how you will.
+
+*). At the top of orac_dba.pl, change the perl executable string
+    to whatever is appropriate, eg:
+
+       => #!/usr/local/bin/perl
+
+*** *BEFORE* BUILDING, TESTING AND INSTALLING this you will need to:
+
+    Build, test and install Perl 5 (at least 5.005_02, preferably
+    version 5.004_01 or later).
+    It is very important to TEST it and INSTALL it!
+
+    Build, test and install the Tk module (at least Tk800.011).
+    It is very important to TEST it and INSTALL it!
+
+    Build, test and install the DBI module (at least DBI 1.02).
+    It is very important to TEST it and INSTALL it!
+
+    Remember to *read* the DBI README file and this one CAREFULLY!
+
+    Build, test and install the DBD module (at least DBI 0.54).
+    It is very important to TEST it and INSTALL it!
+
+    Remember to *read* the DBD README file and this one CAREFULLY!
+
+    Install enough Oracle software to enable DBD::Oracle to build.
+    
+    Orac was originally written with all the named Perl modules above.
+    It may not necessarily work with later versions, but probably will.
+
+*** RUNNING ORAC:
+
+    A script has been supplied to run Orac, run_orac.sh, which is pretty
+    simple.  Take a look at it and see how it works.  Basically all
+    you need to do is change the ORACLE_HOME, to whatever yours is for DBD,
+    point the 'cd' command to the one containing your 'ORAC_DBA' directory,
+    and then place run_orac.sh in a typical bin directory in your PATH,
+    or your current directory, and then run it:
+
+              ./run_orac.sh
+
+    *. For now, until you work it out later, just login as the guest user.
+ 
+    *. Then input the SQL*Net connection string for your database followed 
+       by the SYSTEM user password for that database
+
+    *. You should now be connected to the database as the SYSTEM user,
+       and all of Orac's tools should be available to you to use.
+   
+*** ABOUT ORAC:
+
+Orac (ORacle for Andy's Console - well, it's actually named after Orac
+from Blakes' Seven) is a Perl/Tk tool written by Andy Duncan 
+(andy_j_duncan@yahoo.com) in order to store many different and hopefully 
+useful SQL scripts within one central easy-to-use interface repository.  
+It is a Read-Only 'as is' tool (ie: no DDL, DML, transactions, commits or 
+rollbacks, only selects) and will be updated continuously to improve its 
+functionality and GUI-ness simplicity.  If you have any useful SQL scripts, 
+which you would like to be included within Orac, or requirements which you 
+think may be useful to others, please mail them to me at the above address
+and I'll try and embed them.
+
+If you would like to form a joint internet project with me (eg: Linux?) to
+develop the Orac tool into a fully functioning 'complete' Oracle suite
+of programs, then please let me know and we'll get it set up.
+In the meantime, all scripts or ideas, if used, will be fully 
+acknowledged in future versions of Orac, however please note I would
+like to keep it Read-Only for now, unless you can persuade me
+otherwise.
+
+Good graphical ideas for turning difficult to read V$ table 
+information into useful pictures are particularly welcomed, as 
+is functionality not currently supplied within other GUI tools.
+
+General ideas for improving Orac (which started life as a ten line SQL 
+script for killing rogue Oracle processes) are also welcomed, except 
+for those starting with the phrase; 'it would be better in Windows'.  
+
+Orac is currently written in perl5.005_02 with DBD-Oracle-0.54, DBI-1.02 & 
+Tk800.011 all of which are freely available from www.perl.com for download. 
+Orac was built mainly upon Oracle 804 but should work equally well with 
+anything Oracle 7.3 or over. 
+
+EOF
